@@ -1,3 +1,6 @@
+// source:
+// https://www.geeksforgeeks.org/%C2%AD%C2%ADkasais-algorithm-for-construction-of-lcp-array-from-suffix-array/
+
 // C++ program for building LCP array for given text
 #include <bits/stdc++.h>
 using namespace std;
@@ -26,14 +29,11 @@ vector<int> buildSuffixArray(string txt, int n) {
   // and maintain their old indexes while sorting
   for (int i = 0; i < n; i++) {
     suffixes[i].index = i;
-    suffixes[i].rank[0] = txt[i] - 'a';  // questo dovrebbe essere l'ASCII
-    // subtraction, ma a che serve in questo caso?
+    suffixes[i].rank[0] = txt[i] - 'a';  // ASCII subtraction
+    // ma a che serve in questo caso?
     // condition ? result_if_true : result_if_false
     suffixes[i].rank[1] = ((i + 1) < n) ? (txt[i + 1] - 'a') : -1;
   }
-
-  cout << txt[0] << endl;
-  cout << int(txt[0]) << ',' << int('a');
 
   cout << endl << "before sorting: \n";
   for (int i = 0; i < n; i++) {
