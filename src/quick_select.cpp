@@ -136,7 +136,7 @@ int select(T* A, int j, int begin, int end) {
   // if the block has dimension smaller than j
   if (end - begin < j) {
     insertion_sort(A, begin, end);
-    return A[j];  // ho dubbi su questo indice
+    return A[begin];  // ho dubbi su questo indice
   }
 
   int pivot = select_pivot(A, j, begin, end);

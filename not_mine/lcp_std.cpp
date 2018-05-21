@@ -14,6 +14,7 @@ struct suffix {
 // A comparison function used by sort() to compare two suffixes
 // Compares two pairs, returns 1 if first pair is smaller
 int cmp(struct suffix a, struct suffix b) {
+  // se la lettera corrente è la stessa confronta la seconda
   return (a.rank[0] == b.rank[0]) ? (a.rank[1] < b.rank[1] ? 1 : 0)
                                   : (a.rank[0] < b.rank[0] ? 1 : 0);
 }
@@ -25,7 +26,7 @@ vector<int> buildSuffixArray(string txt, int n) {
   struct suffix suffixes[n];
 
   // Store suffixes and their indexes in an array of structures.
-  // The structure is needed to sort the suffixes alphabatically
+  // The structure is needed to sort the suffixes alphabetically
   // and maintain their old indexes while sorting
   for (int i = 0; i < n; i++) {
     suffixes[i].index = i;
@@ -44,6 +45,7 @@ vector<int> buildSuffixArray(string txt, int n) {
 
   // Sort the suffixes using the comparison function
   // defined above.
+  // std::sort(std::begin(array), std::end(array), comparisonFunction())
   sort(suffixes, suffixes + n, cmp);
 
   cout << endl << "after sorting: \n";
