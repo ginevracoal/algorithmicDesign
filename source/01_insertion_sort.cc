@@ -1,18 +1,23 @@
+/* Insertion Sort
+time complexity O(n^2)
+*/
+
 #include <cstdlib>
 #include <iostream>
 
+// print an array of size n
 template <typename T>
-void print_array(T* array, int length) {
-  for (int i = 0; i < length; ++i) {
+void print_array(T* array, int n) {
+  for (int i = 0; i < n; ++i) {
     std::cout << array[i] << " ";
   }
   std::cout << std::endl;
 }
 
 template <typename T>
-void insertion_sort(T* array, int length) {
+void insertion_sort(T* array, int n) {
   int i, j, k;
-  for (j = 1; j < length; ++j) {
+  for (j = 1; j < n; ++j) {
     k = array[j];
     i = j - 1;
     while (i >= 0 && array[i] > k) {

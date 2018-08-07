@@ -1,7 +1,7 @@
 #include <math.h>
-#include <cstdlib>
+#include <cstdlib>  // only for cout
 #include <iostream>
-#include <vector>
+// #include <vector> // cannot use this!!!
 
 // =====================================================
 // FUNCTION DECLARATIONS
