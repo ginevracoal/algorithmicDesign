@@ -1,7 +1,23 @@
-#include <math.h>
+/* TO DO:
+
+ - l'indice finale è avanti di un numeros
+ - controllare se funziona con due indici uguali
+ - scegliere cosa stampare nel debug
+ - definire una classe pair!!
+*/
+
+// =====================================================
+
+/* Quickselect algorithm finds the kth smallest element in an unordered list. It
+ uses the same approach of quicksort, choosing one element as a pivot and
+ partitionting the data in two based on this pivot.
+ This method only makes recursion on the half containing the element on
+ interest, thus reducing the worst case complexity from O(n logn) to O(n).
+*/
+
+#include <math.h>   // ceil function
 #include <cstdlib>  // only for cout
 #include <iostream>
-// #include <vector> // cannot use this!!!
 
 // =====================================================
 // FUNCTION DECLARATIONS
@@ -32,21 +48,21 @@ void print(T* A, int begin, int end) {
   for (int i = begin; i < end; ++i) {
     std::cout << A[i] << " ";
   }
-  std::cout << std::endl;
+  // std::cout << std::endl;
 }
 
 template <typename T>
 void insertion_sort(T* A, int begin, int end) {
 #ifdef DEBUG
-  std::cout << "\nInsertion sort on: ";
+  std::cout << "\n  Insertion sort: ";
   print(A, begin, end);
 #endif
 
   int i, j, k;
-  for (j = begin; j < end; j++) {
+  for (j = begin; j < end; ++j) {
     k = A[j];
     i = j - 1;
-    while (i >= 0 && A[i] > k) {
+    while (i >= begin && A[i] > k) {
       A[i + 1] = A[i];
       i--;
     }
@@ -56,18 +72,19 @@ void insertion_sort(T* A, int begin, int end) {
 #ifdef DEBUG
   std::cout << "-> ";
   print(A, begin, end);
+  std::cout << std::endl;
 #endif
 }
 
 // finds the median of the medians from begin to end, given the index j, which
 // is the maximum size of each block
 template <typename T>
-int select_pivot(T* A, int j, int begin, int end) {
-  std::cout << "[select pivot]\n";
+int select_pivot(T* A, int begin, int end, int j) {
+  int n_blocks = ceil((end - begin) / (double)j);
 
-  int n_blocks = ceil((end - begin + 1) / (double)j);
-  std::cout << "\nn blocks: " << n_blocks;
-
+  std::cout << "\n\n[select pivot(A, " << begin << ", " << end << ", " << j
+            << ")]";
+  std::cout << "\n n blocks: " << n_blocks << std::endl;
   // array contaning the medians for each block
   int* medians = new T[n_blocks];
   // std::vector<int> medians;
@@ -81,17 +98,19 @@ int select_pivot(T* A, int j, int begin, int end) {
     else
       cend = end;
 
-    std::cout << "\n" << cbegin << "-" << cend << std::endl;
+#ifdef DEBUG
+    std::cout << "\n  indexes " << cbegin << "-" << cend;
+#endif
 
     // apply IS to each block
     insertion_sort(A, cbegin, cend);
 
     // store the i-th median
-    medians[i] = A[(cbegin + cend) / 2];
+    medians[i] = A[(cend + cbegin) / 2];
   }
 
   // calculate the median of the medians
-  std::cout << "\nMedians: ";
+  std::cout << "\n Medians: ";
   print(medians, 0, n_blocks);
   T median = select(medians, j, 0, n_blocks);
   delete[] medians;  // the array has to be deallocated
@@ -112,47 +131,69 @@ void swap(T& a, T& b) {
 // 3) A[k_2+1,...,end] contains all elements greater than the pivot
 // finally it returns k_1 and k_2
 template <typename T>
-std::pair<int, int> tri_partition(T* A, int begin, int end, int pivot) {
-  // T pivot = A[pivotIdx];  // pivot value
-  std::pair<int, int> k = {begin, end};
-  for (int i = begin; i < end; ++i) {
+std::pair<int, int> tri_partition(T* A, int begin, int end, int pivotIdx) {
+  T pivot = A[pivotIdx];  // pivot value
+  swap(A[pivotIdx], A[end - 1]);
+
+#ifdef DEBUG
+  std::cout << "\ntri-partition on A: ";
+  print(A, begin, end);
+  std::cout << "\n\n pivot = " << pivot;
+#endif
+
+  std::pair<int, int> k(begin, begin);
+  for (int i = begin; i < end; i++) {
+#ifdef DEBUG
+    std::cout << "\n A: ";
+    print(A, begin, end);
+    std::cout << ", A[i] = " << A[i];
+#endif
+
     if (A[i] < pivot) {
       swap(A[i], A[k.first]);
       k.first++;
-    } else if (A[i] > pivot) {
-      swap(A[i], A[k.second]);
-      k.second--;
+      k.second++;
+    } else if (A[i] == pivot && A[i] == A[i - 1]) {
+      // swap(A[i], A[  k.second]);
+      k.second++;
     }
   }
+
+  swap(A[k.first], A[end - 1]);
+
+  std::cout << "\n A: ";
+  print(A, begin, end);
+  std::cout << "\n k_1 = " << k.first << " and k_2 = " << k.second << std::endl;
   return k;
 }
 
 // returns the j-th smaller element of the array
 template <typename T>
 int select(T* A, int j, int begin, int end) {
-  std::cout << "\nSelect on: ";
+  std::cout << "\n\nSelect on: ";
   print(A, begin, end);
 
   // if the block has dimension smaller than j
   if (end - begin < j) {
     insertion_sort(A, begin, end);
-    return A[begin];  // ho dubbi su questo indice
+    return A[begin];
   }
 
-  int pivot = select_pivot(A, j, begin, end);
-  std::cout << "Pivot: " << pivot;
+  int pivot = select_pivot(A, begin, end, j);
   std::pair<int, int> k = tri_partition(A, begin, end, pivot);
-  std::cout << "\nk_1 = " << k.first << " and k_2 = " << k.second << std::endl;
 
   if (j < k.first)
     return select(A, j, begin, k.first - 1);
   else if (j > k.second)
     return select(A, j, k.second + 1, end);
   else if (j >= k.first && j <= k.second) {
-    std::cout << j << "-th smallest element is: " << A[j] << std::endl;
+    std::cout << std::endl
+              << j << "-th smallest element is " << A[j] << std::endl;
     return A[j];
   }
 }
+
+// =====================================================
 
 int main() {
   int A[] = {1, 5, 26, 7, 32, 2, 14, 8, 17, 15, 20, 22, 54};
