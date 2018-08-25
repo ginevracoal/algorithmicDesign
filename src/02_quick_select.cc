@@ -1,14 +1,3 @@
-/* TO DO:
-
- - capire cosa c'è di sbagliato
-  - insertion sort è giusto
- - controllare se funziona con due indici uguali
- - scegliere cosa stampare nel debug
- - definire una classe pair
-*/
-
-// =====================================================
-
 /* Quickselect algorithm finds the kth smallest element in an unordered list. It
  uses the same approach of quicksort, choosing one element as a pivot and
  partitionting the data in two based on this pivot.
