@@ -1,23 +1,23 @@
-/* Here I both implement the naive matrix multiplication algorithm and Strassen
-algorithm. */
-
-/*
-- differenza tra malloc e new?
-- fare una seconda versione che usa una specie di unique ptr
+/**
+ * Naive matrix multiplication algorithm and Strassen mutiplication algorithm.
+ * The asympthotic complexities for naive and Strassen algorithms respectively
+ * are O(N^3) and O(N^log_2(7)).
 */
+
+// ======== TO DO =========
+// implementare classe unique ptr
+// commentare per bene il codice in stile Doxygen
+// ========================
 
 #include <time.h>
 // #include <chrono>
-
 #include <cstdlib>  //only for cout
 #include <iostream>
 
-#define SIZE 4
+#define SIZE 6
 
 // =====================================================
-// FUNCTION DECLARATIONS
-
-// double elapsed(clock_t start, clock_t end);
+/** FUNCTION DECLARATIONS */
 
 template <typename T>
 void print_matrix(T* A, int size);
@@ -35,7 +35,7 @@ template <typename T>
 T* strassen_matmul(T* A, T* B, int size);
 
 // =====================================================
-// FUNCTION DEFINITIONS
+/** FUNCTION DEFINITIONS */
 
 template <typename T>
 void print_matrix(T* M, int size) {
@@ -155,7 +155,7 @@ T* strassen_matmul(T* A, T* B, int size) {
   for (int i = 0; i < subsize; ++i) {
     for (int j = 0; j < subsize; ++j) {
       for (int k = 0; k < subsize; ++k) {
-        // P1 = A11 (B12 - B22)
+        /** P1 = A11 (B12 - B22) */
         P1[i * subsize + k] = A11[i * subsize + j] *
                               (B12[j * subsize + k] + B22[j * subsize + k]);
         // P2 = (A11 + A12) B22
