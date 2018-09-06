@@ -9,7 +9,7 @@
 #include <cstdlib>  //only for cout
 #include <iostream>
 
-#define SIZE 4  // it always has to be a power of 2
+#define SIZE 512  // it always has to be a power of 2
 
 // =====================================================
 // FUNCTION DECLARATIONS
@@ -52,23 +52,17 @@ void sum(T* A, T* B, T* C, int size) {
 
 template <typename T>
 void diff(T* A, T* B, T* C, int size) {
-  // T* C{new T[size * size]};
   for (int i = 0; i < size; ++i)
     for (int j = 0; j < size; ++j)
       C[i * size + j] = A[i * size + j] - B[i * size + j];
-  // return C;
 }
 
 template <typename T>
 void naive_matmul(T* A, T* B, T* C, int size) {
-  // T* C{new T[size * size]};
-
   for (int i = 0; i < size; ++i)
     for (int j = 0; j < size; ++j)
       for (int k = 0; k < size; ++k)
         C[i * size + j] += A[i * size + j] * B[j * size + k];
-
-  // return C;
 }
 
 template <typename T>
@@ -80,11 +74,6 @@ void strassen_matmul(T* A, T* B, T* D, int size) {
 
   T *B11{new T[subsize * subsize]}, *B12{new T[subsize * subsize]},
       *B21{new T[subsize * subsize]}, *B22{new T[subsize * subsize]};
-
-  // T *C11{new T[subsize * subsize]}, *C12{new T[subsize * subsize]},
-  //     *C21{new T[subsize * subsize]}, *C22{new T[subsize * subsize]};
-
-  // T* C{new T[size * size]};
 
   T *P1{new T[subsize * subsize]}, *P2{new T[subsize * subsize]},
       *P3{new T[subsize * subsize]}, *P4{new T[subsize * subsize]},
@@ -221,12 +210,6 @@ void strassen_matmul(T* A, T* B, T* D, int size) {
   delete[] P5;
   delete[] P6;
   delete[] P7;
-
-  // double elapsed = ((float)stop - start) * 1000.0 / CLOCKS_PER_SEC;
-  // // double elapsed = (stop - start).count();
-  // std::cout << "\nExecution time: " << elapsed << "s" << std::endl;
-
-  // return C;
 }
 
 // ===================================================
@@ -238,6 +221,8 @@ int main() {
 
   clock_t start, stop;
   double elapsed;
+
+  std::cout << "\nsize = " << size << std::endl;
 
   // INITIALIZATION
 
@@ -263,7 +248,7 @@ int main() {
   stop = clock();
 
 #ifdef DEBUG
-  std::cout << "\nNaive product:\n";
+  std::cout << "\n\nNaive product:\n";
   print_matrix(C, size);
 #endif
 
@@ -277,7 +262,7 @@ int main() {
   stop = clock();
 
 #ifdef DEBUG
-  std::cout << "\nStrassen product:\n";
+  std::cout << "\n\nStrassen product:\n";
   print_matrix(D, size);
 #endif
 
