@@ -2,22 +2,17 @@
  * Naive matrix multiplication algorithm and Strassen mutiplication algorithm.
  * The asympthotic complexities for naive and Strassen algorithms respectively
  * are O(N^3) and O(N^log_2(7)).
+ * This method only applies to square matrices whose size is a power of 2.
 */
 
-// ======== TO DO =========
-// implementare classe unique ptr
-// commentare per bene il codice in stile Doxygen
-// ========================
-
 #include <time.h>
-// #include <chrono>
 #include <cstdlib>  //only for cout
 #include <iostream>
 
-#define SIZE 6
+#define SIZE 4  // it always has to be a power of 2
 
 // =====================================================
-/** FUNCTION DECLARATIONS */
+// FUNCTION DECLARATIONS
 
 template <typename T>
 void print_matrix(T* A, int size);
@@ -29,13 +24,13 @@ template <typename T>
 void diff(T* A, T* B, T* C, int size);
 
 template <typename T>
-T* naive_matmul(T* A, T* B, int size);
+void naive_matmul(T* A, T* B, T* C, int size);
 
 template <typename T>
-T* strassen_matmul(T* A, T* B, int size);
+void strassen_matmul(T* A, T* B, T* D, int size);
 
 // =====================================================
-/** FUNCTION DEFINITIONS */
+// FUNCTION DEFINITIONS
 
 template <typename T>
 void print_matrix(T* M, int size) {
@@ -48,33 +43,36 @@ void print_matrix(T* M, int size) {
 }
 
 template <typename T>
-T* naive_matmul(T* A, T* B, int size) {
-  std::cout << "\n\nNaive matrix multiplication.";
-
-  T* C{new T[size * size]};
-
-  clock_t start = clock();
-  // auto start = std::chrono::high_resolution_clock::now();
-
+void sum(T* A, T* B, T* C, int size) {
+  // T* C{new T[size * size]};
   for (int i = 0; i < size; ++i)
     for (int j = 0; j < size; ++j)
-      for (int k = 0; k < size; ++k) {
-        C[i * size + j] += A[i * size + k] * B[k * size + j];
-      }
-
-  clock_t stop = clock();
-  // auto stop = std::chrono::high_resolution_clock::now();
-
-  double elapsed = ((float)stop - start) * 1000.0 / CLOCKS_PER_SEC;
-  // double elapsed = (stop - start).count();
-  std::cout << "\nExecution time: " << elapsed << "s" << std::endl;
-
-  return C;
+      C[i * size + j] = A[i * size + j] + B[i * size + j];
 }
 
 template <typename T>
-T* strassen_matmul(T* A, T* B, int size) {
-  std::cout << "\n\nStrassen matrix multiplication.";
+void diff(T* A, T* B, T* C, int size) {
+  // T* C{new T[size * size]};
+  for (int i = 0; i < size; ++i)
+    for (int j = 0; j < size; ++j)
+      C[i * size + j] = A[i * size + j] - B[i * size + j];
+  // return C;
+}
+
+template <typename T>
+void naive_matmul(T* A, T* B, T* C, int size) {
+  // T* C{new T[size * size]};
+
+  for (int i = 0; i < size; ++i)
+    for (int j = 0; j < size; ++j)
+      for (int k = 0; k < size; ++k)
+        C[i * size + j] += A[i * size + j] * B[j * size + k];
+
+  // return C;
+}
+
+template <typename T>
+void strassen_matmul(T* A, T* B, T* D, int size) {
   int subsize = size * 0.5;
 
   T *A11{new T[subsize * subsize]}, *A12{new T[subsize * subsize]},
@@ -83,16 +81,17 @@ T* strassen_matmul(T* A, T* B, int size) {
   T *B11{new T[subsize * subsize]}, *B12{new T[subsize * subsize]},
       *B21{new T[subsize * subsize]}, *B22{new T[subsize * subsize]};
 
-  T *C11{new T[subsize * subsize]}, *C12{new T[subsize * subsize]},
-      *C21{new T[subsize * subsize]}, *C22{new T[subsize * subsize]};
-  T* C{new T[size * size]};
+  // T *C11{new T[subsize * subsize]}, *C12{new T[subsize * subsize]},
+  //     *C21{new T[subsize * subsize]}, *C22{new T[subsize * subsize]};
+
+  // T* C{new T[size * size]};
 
   T *P1{new T[subsize * subsize]}, *P2{new T[subsize * subsize]},
       *P3{new T[subsize * subsize]}, *P4{new T[subsize * subsize]},
       *P5{new T[subsize * subsize]}, *P6{new T[subsize * subsize]},
       *P7{new T[subsize * subsize]};
 
-  T *temp1{new T[subsize * subsize]}, *temp2{new T[subsize * subsize]};
+  T *tmp1{new T[subsize * subsize]}, *tmp2{new T[subsize * subsize]};
 
   // A and B blocks initialization
 
@@ -100,31 +99,15 @@ T* strassen_matmul(T* A, T* B, int size) {
     for (int j = 0; j < subsize; ++j) {
       A11[i * subsize + j] = A[i * size + j];
       B11[i * subsize + j] = B[i * size + j];
-      C11[i * subsize + j] = 0;
-    }
-  }
 
-  for (int i = 0; i < subsize; ++i) {
-    for (int j = 0; j < subsize; ++j) {
       A12[i * subsize + j] = A[i * size + j + subsize];
       B12[i * subsize + j] = B[i * size + j + subsize];
-      C12[i * subsize + j] = 0;
-    }
-  }
 
-  for (int i = 0; i < subsize; ++i) {
-    for (int j = 0; j < subsize; ++j) {
       A21[i * subsize + j] = A[(i + subsize) * size + j];
       B21[i * subsize + j] = B[(i + subsize) * size + j];
-      C21[i * subsize + j] = 0;
-    }
-  }
 
-  for (int i = 0; i < subsize; ++i) {
-    for (int j = 0; j < subsize; ++j) {
       A22[i * subsize + j] = A[(i + subsize) * size + j + subsize];
       B22[i * subsize + j] = B[(i + subsize) * size + j + subsize];
-      C22[i * subsize + j] = 0;
     }
   }
 
@@ -150,76 +133,86 @@ T* strassen_matmul(T* A, T* B, int size) {
 
   // #endif
 
-  clock_t start = clock();
+  // P1 = A11 (B12 - B22)
+  diff(B12, B22, tmp1, subsize);
+  naive_matmul(A11, tmp1, P1, subsize);
 
-  for (int i = 0; i < subsize; ++i) {
-    for (int j = 0; j < subsize; ++j) {
-      for (int k = 0; k < subsize; ++k) {
-        /** P1 = A11 (B12 - B22) */
-        P1[i * subsize + k] = A11[i * subsize + j] *
-                              (B12[j * subsize + k] + B22[j * subsize + k]);
-        // P2 = (A11 + A12) B22
-        P2[i * subsize + k] = (A11[i * subsize + j] + A12[i * subsize + j]) *
-                              B22[j * subsize + k];
-        // P3 = (A21 + A22) B11
-        P3[i * subsize + k] = (A21[i * subsize + j] + A22[i * subsize + j]) *
-                              B11[j * subsize + k];
-        // P4 = A22 (B21 - B11)
-        P4[i * subsize + k] = A22[i * subsize + j] *
-                              (B21[j * subsize + k] - B11[j * subsize + k]);
-        // P5 = (A11 + A22)(B11 + B22)
-        P5[i * subsize + k] = (A11[i * subsize + j] + A22[i * subsize + j]) *
-                              (B11[j * subsize + k] + B22[j * subsize + k]);
-        // P6 = (A12 - A22)(B21 + B22)
-        P6[i * subsize + k] = (A12[i * subsize + j] - A22[i * subsize + j]) *
-                              (B21[j * subsize + k] + B22[j * subsize + k]);
-        // P7 = (A11 - A21)(B11 + B12)
-        P7[i * subsize + k] = (A11[i * subsize + j] - A21[i * subsize + j]) *
-                              (B11[j * subsize + k] + B12[j * subsize + k]);
-      }
-    }
-  }
+  // P2 = (A11 + A12) B22
+  sum(A11, A12, tmp1, subsize);
+  naive_matmul(tmp1, B22, P2, subsize);
+
+  // P3 = (A21 + A22) B11
+  sum(A21, A22, tmp1, subsize);
+  naive_matmul(tmp1, B11, P3, subsize);
+
+  // P4 = A22 (B21 - B11)
+  diff(B21, B11, tmp1, subsize);
+  naive_matmul(A22, tmp1, P4, subsize);
+
+  // P5 = (A11 + A22)(B11 + B22)
+  sum(A11, A22, tmp1, subsize);
+  sum(B11, B22, tmp2, subsize);
+  naive_matmul(tmp1, tmp2, P5, subsize);
+
+  // P6 = (A12 - A22)(B21 + B22)
+  diff(A12, A22, tmp1, subsize);
+  sum(B21, B22, tmp2, subsize);
+  naive_matmul(tmp1, tmp2, P6, subsize);
+
+  // P7 = (A11 - A21)(B11 + B12)
+  diff(A11, A21, tmp1, subsize);
+  sum(B11, B12, tmp2, subsize);
+  naive_matmul(tmp1, tmp2, P7, subsize);
 
   // #ifdef DEBUG
 
-  //   std::cout << "\nP1: \n";
+  //   std::cout << "\nP1:\n";
   //   print_matrix(P1, subsize);
-  //   std::cout << "\nP2: \n";
+  //   std::cout << "\nP2:\n";
   //   print_matrix(P2, subsize);
-  //   std::cout << "\nP3: \n";
+  //   std::cout << "\nP3:\n";
   //   print_matrix(P3, subsize);
-  //   std::cout << "\nP4: \n";
+  //   std::cout << "\nP4:\n";
   //   print_matrix(P4, subsize);
-  //   std::cout << "\nP5: \n";
+  //   std::cout << "\nP5:\n";
   //   print_matrix(P5, subsize);
-  //   std::cout << "\nP6: \n";
+  //   std::cout << "\nP6:\n";
   //   print_matrix(P6, subsize);
-  //   std::cout << "\nP7: \n";
+  //   std::cout << "\nP7:\n";
   //   print_matrix(P7, subsize);
 
   // #endif
 
   for (int i = 0; i < subsize; ++i) {
     for (int j = 0; j < subsize; ++j) {
-      // C11 = P5 + P4 - P2 + P6
-      C[i * size + j] += P5[i * subsize + j] + P4[i * subsize + j] -
-                         P2[i * subsize + j] + P6[i * subsize + j];
-      // C12 = P1 + P2
-      C[(i + subsize) * size + j] += P1[i * subsize + j] + P2[i * subsize + j];
-      // C21 = P3 + P4
-      C[i * size + j + subsize] += P3[i * subsize + j] + P4[i * subsize + j];
+      // D11 = P5 + P4 - P2 + P6
+      D[i * size + j] = P5[i * subsize + j] + P4[i * subsize + j] -
+                        P2[i * subsize + j] + P6[i * subsize + j];
 
-      // C22 = P1 + P5 - P3 - P7
-      C[(i + subsize) * size + j + subsize] +=
+      // D12 = P1 + P2
+      D[i * size + j + subsize] = P1[i * subsize + j] + P2[i * subsize + j];
+
+      // D21 = P3 + P4
+      D[(i + subsize) * size + j] = P3[i * subsize + j] + P4[i * subsize + j];
+
+      // D22 = P1 + P5 - P3 - P7
+      D[(i + subsize) * size + j + subsize] =
           P1[i * subsize + j] + P5[i * subsize + j] - P3[i * subsize + j] -
           P7[i * subsize + j];
     }
   }
 
-  clock_t stop = clock();
+  delete[] tmp1;
+  delete[] tmp2;
 
-  delete[] temp1;
-  delete[] temp2;
+  delete[] A11;
+  delete[] A12;
+  delete[] A21;
+  delete[] A22;
+  delete[] B11;
+  delete[] B12;
+  delete[] B21;
+  delete[] B22;
 
   delete[] P1;
   delete[] P2;
@@ -229,11 +222,11 @@ T* strassen_matmul(T* A, T* B, int size) {
   delete[] P6;
   delete[] P7;
 
-  double elapsed = ((float)stop - start) * 1000.0 / CLOCKS_PER_SEC;
-  // double elapsed = (stop - start).count();
-  std::cout << "\nExecution time: " << elapsed << "s" << std::endl;
+  // double elapsed = ((float)stop - start) * 1000.0 / CLOCKS_PER_SEC;
+  // // double elapsed = (stop - start).count();
+  // std::cout << "\nExecution time: " << elapsed << "s" << std::endl;
 
-  return C;
+  // return C;
 }
 
 // ===================================================
@@ -241,13 +234,19 @@ T* strassen_matmul(T* A, T* B, int size) {
 int main() {
   int size = SIZE;
   int *A{new int[size * size]}, *B{new int[size * size]};
-  int *C, *D;
+  int *C{new int[size * size]}, *D{new int[size * size]};
+
+  clock_t start, stop;
+  double elapsed;
+
+  // INITIALIZATION
 
   for (int i = 0; i < size; ++i)
     for (int j = 0; j < size; ++j) {
       A[i * size + j] = i + 1;
       B[i * size + j] = i + j;
-      // C[i * size + j] = 0;
+      C[i * size + j] = 0;
+      D[i * size + j] = 0;
     }
 
 #ifdef DEBUG
@@ -257,17 +256,33 @@ int main() {
   print_matrix(B, size);
 #endif
 
-  C = naive_matmul(A, B, size);
+  // NAIVE ALGORITHM
+
+  start = clock();
+  naive_matmul(A, B, C, size);
+  stop = clock();
+
 #ifdef DEBUG
-  std::cout << "\nProduct:\n";
+  std::cout << "\nNaive product:\n";
   print_matrix(C, size);
 #endif
 
-  D = strassen_matmul(A, B, size);
+  elapsed = ((float)stop - start) * 1000.0 / CLOCKS_PER_SEC;
+  std::cout << "\nNaive execution time: " << elapsed << "s" << std::endl;
+
+  // STRASSEN ALGORITHM
+
+  start = clock();
+  strassen_matmul(A, B, D, size);
+  stop = clock();
+
 #ifdef DEBUG
-  std::cout << "\nProduct:\n";
+  std::cout << "\nStrassen product:\n";
   print_matrix(D, size);
 #endif
+
+  elapsed = ((float)stop - start) * 1000.0 / CLOCKS_PER_SEC;
+  std::cout << "\nStrassen execution time: " << elapsed << "s" << std::endl;
 
   delete[] A;
   delete[] B;
