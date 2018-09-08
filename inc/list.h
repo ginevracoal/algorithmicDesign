@@ -5,10 +5,14 @@
 #define __list__
 
 #include <iostream>
-// #include "unique_ptr.h"
 
+// choose if I want to use std library or my implementations
+// #ifdef STD
 #include <memory>  // for unique_ptr
 using namespace std;
+// #else
+// #include "unique_ptr.h"
+// #endif
 
 template <typename T>
 class list {
