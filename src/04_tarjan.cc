@@ -8,13 +8,10 @@
  * time, and removed from the stack when a complete SCC is found.
 */
 
-// ============ TO DO ==============
-// implementare stack e list
-
 #include <iostream>
-// #include <list>
-#include <memory>  // for unique_ptr
 #include <stack>
+
+// #include <list>
 #include "../inc/list.h"
 
 #define NIL -1

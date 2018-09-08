@@ -9,7 +9,7 @@
 #include <cstdlib>  //only for cout
 #include <iostream>
 
-#define SIZE 512  // it always has to be a power of 2
+#define SIZE 128  // it always has to be a power of 2
 
 // =====================================================
 // FUNCTION DECLARATIONS
