@@ -1,22 +1,25 @@
-/** Tarjan algorithm calculates the strongly connected components of a directed
- * graph in O(|E|+|V|) time.
- * disc stores the discovery time of visited nodes.
- * lowlink[v] is the smallest index of any node known to be reachable from v,
- * including v itself.
- * To cope with the random traversal order of the DFS (which can give wrong
- * lowlinks) nodes are added to the stack as they are explored for the first
- * time, and removed from the stack when a complete SCC is found.
+/* Tarjan algorithm calculates the strongly connected components of a directed
+  graph in O(|E|+|V|) time.
+  disc stores the discovery time of visited nodes.
+  lowlink[v] is the smallest index of any node known to be reachable from
+  v, including v itself.
+  To cope with the random traversal order of the DFS (which can give wrong
+  lowlinks) nodes are added to the stack as they are explored for the first
+  time, and removed from the stack when a complete SCC is found.
 */
+
+// TO DO
+// - dovrei passare tutti gli argomenti come reference?
+// implementare stack
+// - potrei creare una classe node dentro graph e inserire disc e lowlink come
+// elementi
 
 #include <iostream>
 #include <stack>
-
-// #include <list>
+#include <vector>
 #include "../inc/graph.h"
-// #include "../inc/list.h"
 
 #define NIL -1
-
 using namespace std;
 
 // =====================================================
@@ -44,7 +47,7 @@ void Graph<T>::Tarjan_SCC() {
       Tarjan_SCC_rec(i, disc, lowlink, Q, onStack);
     }
   }
-  cout << "\nThe number of SCCs is " << SCCs << ".\n";
+  cout << "\nThe number of SCCs is " << n_SCCs << ".\n";
 }
 
 // Graph private recursive member function
@@ -55,7 +58,7 @@ void Graph<T>::Tarjan_SCC_rec(int v, T *disc, T *lowlink, stack<T> *Q,
    * scope. */
   static int index = 0;
 
-  /** update id and lowlink */
+  /** update disc and lowlink */
   disc[v] = lowlink[v] = ++index;
 
   /** add the current node to the stack */
@@ -67,7 +70,6 @@ void Graph<T>::Tarjan_SCC_rec(int v, T *disc, T *lowlink, stack<T> *Q,
   /** To visit all the adjacent nodes we use an iterator on the adjacency list
    * of v. We have to specify typename, otherwise the compiler cannot interpret
    * T as a type. */
-  // typename list<T>::iterator it;
   for (typename list<T>::iterator it = adj[v].begin(); it != adj[v].end();
        ++it) {
     int w = *it;
@@ -89,17 +91,30 @@ void Graph<T>::Tarjan_SCC_rec(int v, T *disc, T *lowlink, stack<T> *Q,
     /** Pop all the nodes of the SCC off the stack and mark them as not being on
      * the stack.
      */
-    SCCs++;
+    n_SCCs++;
     while (Q->top() != v) {
       z = Q->top();
+#ifdef DEBUG
+      cout << z << "(" << disc[z] << "," << lowlink[z] << ") ";
+#else
       cout << z << " ";
+#endif
       onStack[z] = false;
       Q->pop();
       // We also want all the nodes from the same SCC to have the same id.
+
+      // #ifdef DEBUG
+      //       cout << z << " (" << disc[z] << "," << lowlink[z] << ")";
+      // #endif
       disc[z] = index;  // potrebbe essere sbagliato
     }
     z = Q->top();
+
+#ifdef DEBUG
+    cout << z << "(" << disc[z] << "," << lowlink[z] << ") \n";
+#else
     cout << z << endl;
+#endif
     onStack[z] = false;
     Q->pop();
   }
@@ -108,16 +123,16 @@ void Graph<T>::Tarjan_SCC_rec(int v, T *disc, T *lowlink, stack<T> *Q,
 // =====================================================
 
 int main() {
-  Graph<int> g(5);
-  g.add_edge(1, 0);
-  g.add_edge(0, 2);
-  g.add_edge(2, 1);
-  g.add_edge(0, 3);
-  g.add_edge(3, 4);
+  Graph<int> g1(5);
+  g1.add_edge(1, 0);
+  g1.add_edge(0, 2);
+  g1.add_edge(2, 1);
+  g1.add_edge(0, 3);
+  g1.add_edge(3, 4);
 
-  g.print_edges();
+  g1.print_edges();
 
-  g.Tarjan_SCC();
+  g1.Tarjan_SCC();
 
   return 0;
 }
