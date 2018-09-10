@@ -12,60 +12,16 @@
 #include <stack>
 
 // #include <list>
-#include "../inc/list.h"
+#include "../inc/graph.h"
+// #include "../inc/list.h"
 
 #define NIL -1
 
 using namespace std;
 
-template <typename T>
-class Graph {
- private:
-  /** Number of nodes */
-  int size;
-  int SCCs;
-
-  /** Adjacency list of nodes */
-  list<T> *adj;
-
-  /** Node color identify their state: white has not been visited, grey has been
-   * visited, black has been visited along with all its adjacent nodes. */
-  // enum class color { white, grey, black };
-
-  /** Recursive function used by Tarjan_SCC */
-  void Tarjan_SCC_rec(int v, T *disc, T *low, stack<T> *Q, bool *onStack);
-
- public:
-  /** Constructor */
-  Graph(int size) {
-    /** parameter size shadows the class member with the same name, so the
-     * use of this-> is required */
-    this->size = size;
-    adj = new list<T>[size];  // allocates a new adjacency list
-  }
-
-  /** Adds the edge from node v to node w to the graph. */
-  void add_edge(T v, T w) { adj[v].push_back(w); }
-
-  void print_edges() {
-    cout << "\nGraph edges are:";
-    for (int v = 0; v < size; ++v) {
-      for (typename list<T>::iterator i = adj[v].begin(); i != adj[v].end();
-           ++i) {
-        cout << endl << v << " " << *i;
-      }
-    }
-    cout << endl;
-  }
-
-  /** Finds the strongly connected components */
-  void Tarjan_SCC();
-};
-
 // =====================================================
-/** Member functions
-*/
 
+// Graph public member function
 template <typename T>
 void Graph<T>::Tarjan_SCC() {
   cout << "\nTarjan SCCs are:\n";
@@ -91,6 +47,7 @@ void Graph<T>::Tarjan_SCC() {
   cout << "\nThe number of SCCs is " << SCCs << ".\n";
 }
 
+// Graph private recursive member function
 template <typename T>
 void Graph<T>::Tarjan_SCC_rec(int v, T *disc, T *lowlink, stack<T> *Q,
                               bool *onStack) {
