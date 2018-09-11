@@ -8,12 +8,6 @@
   time, and removed from the stack when a complete SCC is found.
 */
 
-// TO DO
-// - dovrei passare tutti gli argomenti come reference?
-// implementare stack
-// - potrei creare una classe node dentro graph e inserire disc e lowlink come
-// elementi
-
 #include <iostream>
 #include <stack>
 #include <vector>
@@ -27,7 +21,6 @@ using namespace std;
 // Graph public member function
 template <typename T>
 void Graph<T>::Tarjan_SCC() {
-  cout << "\nTarjan SCCs are:\n";
   int *disc = new int[size];
   int *lowlink = new int[size];
   bool *onStack = new bool[size];
@@ -36,18 +29,25 @@ void Graph<T>::Tarjan_SCC() {
   /** initialization */
   for (int i = 0; i < size; ++i) {
     disc[i] = lowlink[i] = NIL;
-    onStack[i] = false;
+    onStack[i] = false;  // i-th node has not been visited yet
   }
 
-  /** For each non discovered node, call the recursive function to find the
-   * correspondent SCC.
-   */
+/** For each non discovered node, call the recursive function to find the
+ * correspondent SCC.
+ */
+
+#ifdef DEBUG
+  cout << "\nnode(disc, lowlink) couples:\n";
+#endif
+
   for (int i = 0; i < size; ++i) {
     if (disc[i] == NIL) {
       Tarjan_SCC_rec(i, disc, lowlink, Q, onStack);
     }
   }
-  cout << "\nThe number of SCCs is " << n_SCCs << ".\n";
+
+  // setting the number of strongly connected components
+  print_SCCs();
 }
 
 // Graph private recursive member function
@@ -91,32 +91,34 @@ void Graph<T>::Tarjan_SCC_rec(int v, T *disc, T *lowlink, stack<T> *Q,
     /** Pop all the nodes of the SCC off the stack and mark them as not being on
      * the stack.
      */
-    n_SCCs++;
+    vector<T> component;  // new scc
+
+    // OLD CODE
+    // n_SCCs++;
+    // cout << endl << "\nSCC " << n_SCCs << ": ";
+
     while (Q->top() != v) {
       z = Q->top();
-#ifdef DEBUG
-      cout << z << "(" << disc[z] << "," << lowlink[z] << ") ";
-#else
-      cout << z << " ";
-#endif
       onStack[z] = false;
       Q->pop();
-      // We also want all the nodes from the same SCC to have the same id.
 
-      // #ifdef DEBUG
-      //       cout << z << " (" << disc[z] << "," << lowlink[z] << ")";
-      // #endif
-      disc[z] = index;  // potrebbe essere sbagliato
+      component.push_back(z);
+
+#ifdef DEBUG
+      cout << z << "(" << disc[z] << "," << lowlink[z] << ") ";
+#endif
     }
+
     z = Q->top();
 
 #ifdef DEBUG
     cout << z << "(" << disc[z] << "," << lowlink[z] << ") \n";
-#else
-    cout << z << endl;
 #endif
+
     onStack[z] = false;
     Q->pop();
+    component.push_back(z);
+    SCCs->push_back(component);
   }
 }
 
