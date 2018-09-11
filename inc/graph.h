@@ -1,10 +1,3 @@
-
-// =====================================================
-
-// TO DO
-// - descrivere l'header
-// - implementare std::vector e stack
-
 #ifndef __graph__
 #define __graph__
 
@@ -23,29 +16,29 @@ using namespace std;
 template <typename T>
 class Graph {
  private:
-  class Node;
+  // ###### BASIC GRAPH STRUCTURE ######
+
+  // class Node; // too much complicated, not necessary.
 
   // Number of nodes
   int size;
-
-  // Number of strongly connected components
-  int n_SCCs;
-
-  // SCCs
-  vector<vector<T>> *SCCs;
-
   // array of adjacency lists (one list for each node)
   list<T> *adj;
 
-  // // vector of node, each one containing its list of adjacent nodes
-  // vector<Node> nodes;
+  // Number of strongly connected components
+  int n_SCCs;
+  // SCCs
+  vector<vector<T>> *SCCs;
+  // SCCs indicator
+  bool *SCC_idx = new bool[size];
+
+  // ###### UTILITY FUNCTIONS ######
 
   // Tarjan recursive function
   void Tarjan_SCC_rec(int v, T *disc, T *low, stack<T> *Q, bool *onStack);
-  // void Tarjan_SCC_rec_new();  // now using Node class
 
   // Fischer Meyer utility functions
-  Graph collapse();
+  Graph<T> collapse();
   bool *UT_adj_matrix();
   void decollapse(T &M);
 
@@ -59,7 +52,13 @@ class Graph {
     SCCs = new vector<vector<T>>[size];
   }
 
-  // Adds the edge from node v to node w to the graph.
+  ~Graph() {
+    delete[] adj;
+    delete[] SCCs;
+    delete[] SCC_idx;
+  }
+
+  // Adds the directed edge from node v to node w.
   void add_edge(T v, T w) { adj[v].push_back(w); }
 
   void print_edges() {
@@ -78,14 +77,14 @@ class Graph {
     cout << "\n\nThere are " << n_SCCs
          << " strongly connected components:" << endl;
     for (auto scc = SCCs->begin(); scc != SCCs->end(); ++scc) {
-      // for (unsigned int j = 0; j < SCCs[i]->size(); j++) {
-      // cout << SCCs[i][j] << " ";
       for (auto node = scc->begin(); node != scc->end(); ++node) {
         cout << *node << " ";
       }
       cout << endl;
     }
   }
+
+  // ###### MAIN ALGORITHMS ######
 
   // Finds the strongly connected components using Tarjan algorithm
   void Tarjan_SCC();
@@ -94,37 +93,39 @@ class Graph {
   void Fischer_Meyer();
 };
 
-// NEW NODE CLASS
+// =====================================================
 
-enum class color { white, grey, black };
+// // NODE CLASS
 
-template <typename T>
-class Graph<T>::Node {
-  // Tarjan uses
-  T val;    // node value
-  int SCC;  // SCC index
-  color col;
-  int disc;
-  int lowlink;
-  vector<Node> adj;  // or should i use Node*?
+// enum class color { white, grey, black };
 
- public:
-  Node(T v) : val{v}, col{color::white}, disc{NIL}, lowlink{NIL} {}
+// template <typename T>
+// class Graph<T>::Node {
+//   // Tarjan uses
+//   T val;    // node value
+//   int SCC;  // SCC index
+//   color col;
+//   int disc;
+//   int lowlink;
+//   vector<Node> adj;  // or should i use Node*?
 
-  void print() {
-    cout << "\nNode: (val=" << val << ", SCC=" << SCC << ", col=" << col
-         << ", disc=" << disc << ", lowlink=" << lowlink << ")";
-  }
+//  public:
+//   Node(T v) : val{v}, col{color::white}, disc{NIL}, lowlink{NIL} {}
 
-  // getters
-  color get_col() { return col; }
-  int get_disc() { return disc; }
-  int get_lowlink() { return lowlink; }
+//   void print() {
+//     cout << "\nNode: (val=" << val << ", SCC=" << SCC << ", col=" << col
+//          << ", disc=" << disc << ", lowlink=" << lowlink << ")";
+//   }
 
-  // setters
-  void set_col(color c) { col = c; }
-  void set_disc(int d) { disc = d; }
-  void set_lowlink(int l) { lowlink = l; }
-};
+//   // getters
+//   color get_col() { return col; }
+//   int get_disc() { return disc; }
+//   int get_lowlink() { return lowlink; }
+
+//   // setters
+//   void set_col(color c) { col = c; }
+//   void set_disc(int d) { disc = d; }
+//   void set_lowlink(int l) { lowlink = l; }
+// };
 
 #endif
