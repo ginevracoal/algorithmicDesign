@@ -10,6 +10,7 @@
 #include "../inc/list.h"
 // #endif
 
+#define MaxSize 50
 #define NIL -1
 using namespace std;
 
@@ -30,7 +31,10 @@ class Graph {
   // SCCs
   vector<vector<T>> *SCCs;
   // SCCs indicator
-  bool *SCC_idx = new bool[size];
+  int SCC_idx[MaxSize];
+
+  // Collapsed graph
+  Graph<T> *collapsed_graph;
 
   // ###### UTILITY FUNCTIONS ######
 
@@ -48,14 +52,15 @@ class Graph {
     // parameter size shadows the class member with the same name, so the use of
     // this-> is required
     this->size = size;
+
     adj = new list<T>[size];  // allocates a new adjacency list
+
     SCCs = new vector<vector<T>>[size];
   }
 
   ~Graph() {
     delete[] adj;
     delete[] SCCs;
-    delete[] SCC_idx;
   }
 
   // Adds the directed edge from node v to node w.

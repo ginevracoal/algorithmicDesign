@@ -6,11 +6,11 @@
 // Graph public member function
 template <typename T>
 void Graph<T>::Tarjan_SCC() {
-  cout << "\n ###### Tarjan_SCC ######";
+  cout << "\n###### Tarjan_SCC ######\n";
 
-  int *disc = new int[size];
-  int *lowlink = new int[size];
-  bool *onStack = new bool[size];
+  int disc[size];      //= new int[size];
+  int lowlink[size];   //= new int[size];
+  bool onStack[size];  // = new bool[size];
   stack<T> *Q = new stack<T>();
 
   /** initialization */
@@ -31,15 +31,19 @@ void Graph<T>::Tarjan_SCC() {
     if (disc[i] == NIL) {
       Tarjan_SCC_rec(i, disc, lowlink, Q, onStack);
     }
+
+    // For each node define the corresponding CC index based on the lowlink
     SCC_idx[i] = lowlink[i];
+    // cout << "\nnode " << i << " belongs to component " << SCC_idx[i];
   }
 
   // setting the number of strongly connected components
   print_SCCs();
 
-  delete[] disc;
-  delete[] lowlink;
-  delete[] onStack;
+  // delete[] disc;
+  // delete[] lowlink;
+  // delete[] onStack;
+  delete Q;
 }
 
 // Graph private recursive member function

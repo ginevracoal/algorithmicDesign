@@ -4,10 +4,9 @@ Descrizione generale dell'algoritmo e della complessità
 
 #include <iostream>
 #include "../inc/fischer_meyer.h"
-#include "../inc/graph.h"
 
 int main() {
-  Graph<int> g(5);
+  Graph<int> g(5);  // size 5 graph constructor
 
   g.add_edge(1, 0);
   g.add_edge(0, 2);

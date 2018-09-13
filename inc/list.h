@@ -19,18 +19,17 @@ class list {
   struct node {
     T val;
     // pointers to previous and next nodes
-    unique_ptr<node> prev, next;
-    node(const T& v, node* p = nullptr, node* n = nullptr)
-        : val{v}, prev{p}, next{n} {};
+    unique_ptr<node> next;
+    node(const T& v, node* n = nullptr) : val{v}, next{n} {};
     // ~node();
   };
 
-  unique_ptr<node> head, tail;
+  unique_ptr<node> head;
   unsigned int size;
 
  public:
   // Default constructor and destructor
-  list() : head{nullptr}, tail{nullptr}, size{0} {}  // calls node ctor
+  list() : head{nullptr}, size{0} {}  // calls node ctor
 
   // Modifiers
   // Passing by const reference so that no new list is created and that the
@@ -40,18 +39,21 @@ class list {
   void pop_back();
   void pop_front();
   void clear();
+  void insert(const T& v);
 
   // Iterators
   class iterator;
-  class const_iterator;
-
   iterator begin() { return head.get(); }
-  iterator end() { return tail.get(); }
+  iterator end() { return iterator{nullptr}; }
 
   // const iterators return a const iterator and are const functions, so they
   // cannot modify the private members of the class.
+  class const_iterator;
   const_iterator cbegin() const { return head.get(); }
-  const_iterator cend() const { return tail.get(); }
+  const_iterator cend() const { return iterator{nullptr}; }
+
+  // Observers
+  void print();
 
   // ~list();
 };
@@ -78,7 +80,7 @@ class list<T>::iterator {
   // it++ operator
   iterator operator++(int) {
     iterator it{current};
-    ++(it);  // same as *this
+    ++(*this);  // same as it
     return it;
   }
 
@@ -102,36 +104,34 @@ class list<T>::const_iterator : public list<T>::iterator {
 
 template <typename T>
 void list<T>::push_back(const T& v) {
-  // // create a new node pointing to the head
-  // node* tmp = new node(v, nullptr, head.get());
-  // // reset the previous node of current head to the new node
-  // head->prev.reset(tmp);
-  // // update the head
-  // head.reset(tmp);
-  head.reset(new node{v, nullptr, head.release()});
+  head.reset(new node{v, head.release()});
   ++size;
 }
 
 template <typename T>
 void list<T>::push_front(const T& v) {
-  // node* tmp = new node(v, tail.get(), nullptr);
-  // tail->prev.reset(tmp);
-  // tail.reset(tmp);
-  tail.reset(new node{v, tail.release(), nullptr});
+  node* tmp{head.get()};
+  while (tmp->next.get() != nullptr) tmp = tmp->next.get();
+  tmp->next.reset(new node{v});
   ++size;
 }
 
+// still have do implement these
 void pop_back();
 void pop_front();
 void clear();
 
-// template <typename T>
-// list<T>::~list() {
-//   node* tmp;
-//   while (head) {
-//     tmp = head.get();
-//     delete tmp;
-//   }
-// }
+template <typename T>
+void list<T>::insert(const T& v) {
+  if (head.get() == nullptr) {
+    head.reset(new node{v});
+  } else
+    push_front(v);
+}
+
+template <typename T>
+void list<T>::print() {  // it cannot modify any member of list
+  for (auto it = this->begin(); it != this->end(); ++it) cout << *it << endl;
+}
 
 #endif
