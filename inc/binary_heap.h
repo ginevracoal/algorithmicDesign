@@ -263,8 +263,8 @@ class BinaryHeap {
 
     // copy each value into the <tt>container</tt> member
     for (typename C<T, std::allocator<T> >::const_iterator it =
-             std::cbegin(container);
-         it != std::cend(container); ++it) {
+             std::begin(container);
+         it != std::end(container); ++it) {
       this->container[this->cont_size++] = *it;
     }
   }

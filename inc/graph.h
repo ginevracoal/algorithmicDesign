@@ -1,10 +1,11 @@
-#ifndef __graph__
-#define __graph__
+#ifndef __GRAPH__
+#define __GRAPH__
 
 #include <iostream>
 #include <stack>
 #include <vector>
-#include "../inc/list.h"
+// #include "binary_heap.h"
+#include "list.h"
 
 #define MaxSize 50
 #define NIL -1
@@ -15,21 +16,16 @@ class Graph {
  private:
   // ###### BASIC GRAPH STRUCTURE ######
 
-  // class Node;
-
   // Nodes and edges
   int size;      // number of nodes
   list<T> *adj;  // pointer to array of adjacency lists (one list for each node)
+  list<pair<T, int>> *adj_list;  // for int weighted graphs
 
   // Strongly connected components
   int n_SCCs;                 // number of SCCs
   vector<vector<T>> *SCCs;    // vector containing SCCs
   int SCC_idx[MaxSize];       // SCCs indicator
   Graph<T> *collapsed_graph;  // Collapsed graph
-
-  // Dijkstra variables
-  // T *parent;             // array containing parent indexes
-  // vector<double> *dist;  // distances from current node to all other nodes
 
   // ###### UTILITY FUNCTIONS ######
 
@@ -47,16 +43,14 @@ class Graph {
     this->size = size;  // parameter size shadows the class member with the same
                         // name, so the use of this-> is required
     adj = new list<T>[size];  // allocates a new adjacency list
+    adj_list = new list<pair<T, int>>[size];
     SCCs = new vector<vector<T>>[size];
-    // parent = new T[size];
-    // dist = new vector<double>[size];
   }
 
   ~Graph() {
     delete[] adj;
+    delete[] adj_list;
     delete[] SCCs;
-    // delete[] parent;
-    // delete[] dist;
   }
 
   // OBSERVERS
@@ -64,9 +58,20 @@ class Graph {
   void print_edges() {
     cout << "\nGraph edges are:";
     for (int v = 0; v < size; ++v) {
-      for (typename list<T>::iterator i = adj[v].begin(); i != adj[v].end();
-           ++i) {
-        cout << endl << v << " -> " << *i;
+      for (typename list<T>::iterator it = adj[v].begin(); it != adj[v].end();
+           ++it) {
+        cout << endl << v << " -> " << *it;
+      }
+    }
+    cout << endl;
+  }
+
+  void print_weighted_edges() {
+    cout << "\nWeighted graph edges are:";
+    for (int v = 0; v < size; ++v) {
+      for (auto it = adj_list[v].begin(); it != adj_list[v].end(); ++it) {
+        cout << endl
+             << v << " ----[" << (*it).second << "]---> " << (*it).first;
       }
     }
     cout << endl;
@@ -95,16 +100,14 @@ class Graph {
     }
   }
 
-  // double get_dist(T v, T w) { return dist[v][w]; }
-  // T get_parent(T v) { return parent[v]; }
-
   // MODIFIERS
 
   // Adds the directed edge from node v to node w.
   void add_edge(T v, T w) { adj[v].push_back(w); }
 
-  // void set_dist(T v, T w, double d) { *dist[v][w] = d; }
-  // void set_parent(T n, T p) { *parent[n] = p; }
+  void add_edge(T from, T to, int weight) {
+    adj_list[from].push_back(make_pair(to, weight));
+  }
 
   // ###### MAIN ALGORITHMS ######
 
@@ -115,16 +118,7 @@ class Graph {
   void Fischer_Meyer();
 
   // Solves single source shortest path problem using Dijkstra algorithm
-  // void Dijkstra(T s);  // takes a start node index
+  void Dijkstra(T src);  // takes a start node index
 };
-
-// template <typename T>
-// class Graph<T>::Node {
-//   T val;         // node value
-//   list<T> *adj;  // pointer to array of adjacency lists (one list for each
-//   node)
-
-//  public:
-// };
 
 #endif
