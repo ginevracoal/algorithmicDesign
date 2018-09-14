@@ -5,9 +5,7 @@ Dijkstra algorithm for single source shortest path problem.
 #ifndef __dijkstra__
 #define __dijkstra__
 
-// #include "binary_heap.h"
 #include "graph.h"
-// #include "heapsort.h"
 #define INFTY 100
 
 template <typename T>
@@ -27,7 +25,6 @@ void Graph<T>::Dijkstra(T src) {
 
   // src has distance 0 from itself
   dist[src] = 0;
-// pred[src] = true;
 
 #ifdef DEBUG
   cout << "\nInitialization:";
