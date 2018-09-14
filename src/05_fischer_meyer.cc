@@ -16,7 +16,7 @@ int main() {
 
   g.print_edges();
 
-  g.Fischer_Meyer();
+  // g.Fischer_Meyer();
 
   return 0;
 }

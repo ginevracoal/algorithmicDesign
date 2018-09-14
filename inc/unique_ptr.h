@@ -1,6 +1,6 @@
 // unique_ptr belongs to header memory
 // std::unique_ptr is a smart pointer that owns and manages another object
-// through a pointer and disposes of that object when the unique_ptr goes out of
+// through a pointer and disposes of that object when the unique_ptr goes outof
 // scope. std::unique_ptr is commonly used to manage the lifetime of objects.
 // In this version unique_ptr manages a single object allocated with new.
 

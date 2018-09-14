@@ -2,13 +2,9 @@
 #define __graph__
 
 #include <iostream>
-
-// #ifdef STD
-// #include <list>
 #include <stack>
 #include <vector>
 #include "../inc/list.h"
-// #endif
 
 #define MaxSize 50
 #define NIL -1
@@ -19,52 +15,51 @@ class Graph {
  private:
   // ###### BASIC GRAPH STRUCTURE ######
 
-  // class Node; // too much complicated, not necessary.
+  // class Node;
 
-  // Number of nodes
-  int size;
-  // array of adjacency lists (one list for each node)
-  list<T> *adj;
+  // Nodes and edges
+  int size;      // number of nodes
+  list<T> *adj;  // pointer to array of adjacency lists (one list for each node)
 
-  // Number of strongly connected components
-  int n_SCCs;
-  // SCCs
-  vector<vector<T>> *SCCs;
-  // SCCs indicator
-  int SCC_idx[MaxSize];
+  // Strongly connected components
+  int n_SCCs;                 // number of SCCs
+  vector<vector<T>> *SCCs;    // vector containing SCCs
+  int SCC_idx[MaxSize];       // SCCs indicator
+  Graph<T> *collapsed_graph;  // Collapsed graph
 
-  // Collapsed graph
-  Graph<T> *collapsed_graph;
+  // Dijkstra variables
+  // T *parent;             // array containing parent indexes
+  // vector<double> *dist;  // distances from current node to all other nodes
 
   // ###### UTILITY FUNCTIONS ######
 
   // Tarjan recursive function
-  void Tarjan_SCC_rec(int v, T *disc, T *low, stack<T> *Q, bool *onStack);
+  void Tarjan_SCC_rec(int, T *, T *, stack<T> *, bool *);
 
   // Fischer Meyer utility functions
   Graph<T> collapse();
   bool *UT_adj_matrix();
-  void decollapse(T &M);
+  void decollapse(T &);
 
  public:
-  // Constructor
+  // Graph constructor and destructor
   Graph(int size) {
-    // parameter size shadows the class member with the same name, so the use of
-    // this-> is required
-    this->size = size;
-
+    this->size = size;  // parameter size shadows the class member with the same
+                        // name, so the use of this-> is required
     adj = new list<T>[size];  // allocates a new adjacency list
-
     SCCs = new vector<vector<T>>[size];
+    // parent = new T[size];
+    // dist = new vector<double>[size];
   }
 
   ~Graph() {
     delete[] adj;
     delete[] SCCs;
+    // delete[] parent;
+    // delete[] dist;
   }
 
-  // Adds the directed edge from node v to node w.
-  void add_edge(T v, T w) { adj[v].push_back(w); }
+  // OBSERVERS
 
   void print_edges() {
     cout << "\nGraph edges are:";
@@ -73,6 +68,17 @@ class Graph {
            ++i) {
         cout << endl << v << " -> " << *i;
       }
+    }
+    cout << endl;
+  }
+
+  void print_adj() {
+    cout << "\nAdjacency lists:";
+    for (int v = 0; v < size; ++v) {
+      cout << "\nadj[" << v << "] = ";
+      for (typename list<T>::iterator i = adj[v].begin(); i != adj[v].end();
+           ++i)
+        cout << *i << " ";
     }
     cout << endl;
   }
@@ -89,6 +95,17 @@ class Graph {
     }
   }
 
+  // double get_dist(T v, T w) { return dist[v][w]; }
+  // T get_parent(T v) { return parent[v]; }
+
+  // MODIFIERS
+
+  // Adds the directed edge from node v to node w.
+  void add_edge(T v, T w) { adj[v].push_back(w); }
+
+  // void set_dist(T v, T w, double d) { *dist[v][w] = d; }
+  // void set_parent(T n, T p) { *parent[n] = p; }
+
   // ###### MAIN ALGORITHMS ######
 
   // Finds the strongly connected components using Tarjan algorithm
@@ -96,41 +113,18 @@ class Graph {
 
   // Computes the transitive closure using Fischer Meyer algorithm
   void Fischer_Meyer();
+
+  // Solves single source shortest path problem using Dijkstra algorithm
+  // void Dijkstra(T s);  // takes a start node index
 };
-
-// =====================================================
-
-// // NODE CLASS
-
-// enum class color { white, grey, black };
 
 // template <typename T>
 // class Graph<T>::Node {
-//   // Tarjan uses
-//   T val;    // node value
-//   int SCC;  // SCC index
-//   color col;
-//   int disc;
-//   int lowlink;
-//   vector<Node> adj;  // or should i use Node*?
+//   T val;         // node value
+//   list<T> *adj;  // pointer to array of adjacency lists (one list for each
+//   node)
 
 //  public:
-//   Node(T v) : val{v}, col{color::white}, disc{NIL}, lowlink{NIL} {}
-
-//   void print() {
-//     cout << "\nNode: (val=" << val << ", SCC=" << SCC << ", col=" << col
-//          << ", disc=" << disc << ", lowlink=" << lowlink << ")";
-//   }
-
-//   // getters
-//   color get_col() { return col; }
-//   int get_disc() { return disc; }
-//   int get_lowlink() { return lowlink; }
-
-//   // setters
-//   void set_col(color c) { col = c; }
-//   void set_disc(int d) { disc = d; }
-//   void set_lowlink(int l) { lowlink = l; }
 // };
 
 #endif

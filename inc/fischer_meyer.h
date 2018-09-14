@@ -4,6 +4,16 @@
 #include "graph.h"
 #include "tarjan.h"
 
+template <typename T>
+void print_matrix(T* M, int size) {
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
+      std::cout << M[i * size + j] << "\t";
+    }
+    std::cout << std::endl;
+  }
+}
+
 // Compute the SCC collapsed graph, obtaining an acyclic graph.
 template <typename T>
 Graph<T> Graph<T>::collapse() {
@@ -51,11 +61,26 @@ Graph<T> Graph<T>::collapse() {
 template <typename T>
 bool* Graph<T>::UT_adj_matrix() {
   cout << "\n###### UT_adj_matrix ######\n";
+  bool* adj_matrix[size * size];
 
-  return false;
+  // Initialize all nodes as only being adjacent to themselves.
+  for (int i = 0; i < size; ++i) {
+    for (int j = 0; j < size; ++j) {
+      if (i == j)
+        *adj_matrix[i * size + j] = true;
+      else
+        *adj_matrix[i * size + j] = false;
+    }
+  }
+
+  // now i should iterate according to topological sort
+
+  //  DA FINIRE
+
+  return *adj_matrix;
 }
 
-// Compute the transitive closure from the adjacency matrix.
+// Compute the transitive closure of the adjacency matrix.
 template <typename T>
 void Graph<T>::decollapse(T& M) {
   cout << "\n###### decollapse ######\n";
@@ -70,9 +95,10 @@ void Graph<T>::Fischer_Meyer() {
   // Graph<T> collapsed_graph(this->n_SCCs);
   Graph<T> collapsed_graph = this->collapse();  // O(|V|^2) as topological sort
   collapsed_graph.print_edges();
+  collapsed_graph.print_adj();
 
-  //   // Create an upper triangular adjacency matrix
-  //   bool* M = collapsed_graph.UT_adj_matrix();  //????
+  // Create an upper triangular adjacency matrix
+  bool* M = collapsed_graph.UT_adj_matrix();  // time complexity????
 
   //   // Get the transitive closure of the matrix
   //   return this->decollapse(&M);  // O(|V|^2)

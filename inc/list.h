@@ -5,14 +5,9 @@
 #define __list__
 
 #include <iostream>
-
-// choose if I want to use std library or my implementations
-// #ifdef STD
 #include <memory>  // for unique_ptr
 using namespace std;
-// #else
 // #include "unique_ptr.h"
-// #endif
 
 template <typename T>
 class list {
@@ -34,12 +29,12 @@ class list {
   // Modifiers
   // Passing by const reference so that no new list is created and that the
   // function cannot change the value of the object.
-  void push_back(const T& v);   // push from the head
-  void push_front(const T& v);  // push from the tail
+  void push_back(const T&);   // push from the head
+  void push_front(const T&);  // push from the tail
   void pop_back();
   void pop_front();
   void clear();
-  void insert(const T& v);
+  void insert(const T&);
 
   // Iterators
   class iterator;
