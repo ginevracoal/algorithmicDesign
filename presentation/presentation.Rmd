@@ -20,12 +20,22 @@ always_allow_html: yes
 
 <!-- spiegare perché l'algoritmo sul grafo di base non è efficiente -->
 
+<div align='center'>
+The **multi-level graph structure** is a *hierarchical decomposition* tecnique which allows to speed-up shortest path problems on very big graphs. 
+
+The idea of this algorithm is to create a *shortest-path distance preserving* graph smaller than the original one, on which one can efficiently solve computationally expensive problems.
+
+<br>
+
+After a formal description of the method, we'll look at the improvements in the <br> performance of *Dijkstra's algorithm* applied to **railway timetable information graphs**.
+</div>
+
 ## Multi-level Graph {.build}
 
 <div align='center'>
 Let $G = (V,E)$ be a weighted directed graph with non-negative weights. 
 
-The idea is to extend both the number of edges and the number of *levels* of this graph, is such a way that **single-pair shortest path** algorithms can be applied efficiently on a smaller subgraph.
+We want to extend both the number of edges and the number of *levels* of this graph, is such a way that **single-pair shortest path** algorithms can be applied efficiently on a smaller subgraph.
 </div>
 
 <br>
@@ -76,14 +86,55 @@ Edge $(u,v)$ belongs to $L_i$ if and only if no internal <br> vertex of the shor
 
 Notice that, since the shortest paths are not generally unique, this construction is not uniquely determined.
 
-Now we define the multi-level graph 
+Now we define the multi-level graph
 $$
 \mathcal{M}(G;S_1,\dots,S_l) := \Big(V, E \cup \bigcup_{i=1,\dots,l}(E_i \cup U_i \cup D_i) \Big).
 $$
 
+## Multi-level Graph | Connected components {.build}
+
+<div align='center'>
+Let's now consider the subgraphs of $G$ induced by the nodes in $V\setminus S_i$.
+</div>
+
+<div class='columns-2'>
+
+<img src="images/component_tree.png" width=480>
+
+<br>
+
+We'll use the following notation for each subgraph:
+
+- $\mathcal{C}_i$ is the set of its connected components;
+- $C_i^v$ is the connected component in $\mathcal{C}_i$ containing $v\in V\setminus S_i$;
+- $v\in S_i$ is said to be *adjacent* to a component $C\in\mathcal{C}_i$ if there is at least one edge connecting them. 
+
+</div>
+
+## Multi-level Graph | Connected components 
+
+<div align='center'>
+Let's now consider the subgraphs of $G$ induced by the nodes in $V\setminus S_i$.
+</div>
+
+<div class='columns-2'>
+
+<img src="images/component_tree.png" width=480>
+
+<br>
+
+<!-- In this framework, e -->
+Edges $E_i$ represent the shortest paths *between vertices of $S_i$ passing through a connected component*.
+
+Edges $U_i$ represent the shortest paths *from a vertex inside a connected component to all vertices of $S_i$ adjacent to that component*. 
+
+Edges $D_i$ represent the shortest paths *from the adjacent vertices of a component to a vertex of that component*.
+
+</div>
+
 ## Multi-level Graph | Component Tree
 
-
+T
 
 ## Graph representation of Timetable Information | Adapting the Multi-level Graph approach
 
