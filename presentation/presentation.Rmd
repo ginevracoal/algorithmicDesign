@@ -34,7 +34,7 @@ We start from a nested sequence of subsets of nodes
 $$
 V \supset S_1 \supset \dots \supset S_l
 $$
-which will be used to define the associated **multi-level graph** $\mathcal{M}(G;S_1,\dots,S_l)$ with its $l+1$ levels.
+which will be used to define the associated **multi-level graph** $\mathcal{M}(G;S_1,\dots,S_l)$ and its $l+1$ levels.
 
 ## Multi-level Graph | Levels {.build}
 
@@ -60,12 +60,26 @@ Level $0$ is set to $L_0 := (E, \emptyset, \emptyset)$.
 ## Multi-level Graph | Construction {.build}
 
 <div align='center'>
-The costruction of the levels is iterative.
+The costruction of the levels is iterative:
 </div>
 
-Supposing we just built level $L_{i-1}$, we now consider for each node $u\in S_{i-1}$ a shortest-path tree $T_u$ in $(S_{i-1},E_{i-1})$.
+<!-- , after building level $L_{i-1}$,  -->
+- At the *i-th step* for each node $u\in S_{i-1}$ consider a shortest-path tree $T_u$ in the graph $(S_{i-1},E_{i-1})$.
+ 
+- Level, upward and downward edges in the new level $L_i$ are chosen with the following condition:
 
+<div align='center'>
+Edge $(u,v)$ belongs to $L_i$ if and only if no internal <br> vertex of the shortest path $u-v$ in $L_u$ belongs to $S_i$. 
+</div>
 
+<!-- this means that the only edges of S_i occurring in the shortest path are u and v. -->
+
+Notice that, since the shortest paths are not generally unique, this construction is not uniquely determined.
+
+Now we define the multi-level graph 
+$$
+\mathcal{M}(G;S_1,\dots,S_l) := \Big(V, E \cup \bigcup_{i=1,\dots,l}(E_i \cup U_i \cup D_i) \Big).
+$$
 
 ## Multi-level Graph | Component Tree
 

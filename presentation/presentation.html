@@ -113,7 +113,7 @@
 
 <p>We start from a nested sequence of subsets of nodes \[
 V \supset S_1 \supset \dots \supset S_l
-\] which will be used to define the associated <strong>multi-level graph</strong> \(\mathcal{M}(G;S_1,\dots,S_l)\) with its \(l+1\) levels.</p>
+\] which will be used to define the associated <strong>multi-level graph</strong> \(\mathcal{M}(G;S_1,\dots,S_l)\) and its \(l+1\) levels.</p>
 
 </article></slide><slide class=''><hgroup><h2>Multi-level Graph </h2><h3> Levels</h3></hgroup><article  id="multi-level-graph-levels" class="smaller build">
 
@@ -138,9 +138,26 @@ V \supset S_1 \supset \dots \supset S_l
 
 </article></slide><slide class=''><hgroup><h2>Multi-level Graph </h2><h3> Construction</h3></hgroup><article  id="multi-level-graph-construction" class="smaller build">
 
-<p>The costruction of the levels is iterative.</p>
+<div align="center">
+<p>The costruction of the levels is iterative:</p></div>
 
-<p>Supposing we just built level \(L_{i-1}\), we now consider for each node \(u\in S_{i-1}\) a shortest-path tree \(T_u\) in \((S_{i-1},E_{i-1})\).</p>
+<!-- , after building level $L_{i-1}$,  -->
+
+<ul class = 'build'>
+<li><p>At the <em>i-th step</em> for each node \(u\in S_{i-1}\) consider a shortest-path tree \(T_u\) in the graph \((S_{i-1},E_{i-1})\).</p></li>
+<li><p>Level, upward and downward edges in the new level \(L_i\) are chosen with the following condition:</p></li>
+</ul>
+
+<div align="center">
+<p>Edge \((u,v)\) belongs to \(L_i\) if and only if no internal <br> vertex of the shortest path \(u-v\) in \(L_u\) belongs to \(S_i\).</p></div>
+
+<!-- this means that the only edges of S_i occurring in the shortest path are u and v. -->
+
+<p>Notice that, since the shortest paths are not generally unique, this construction is not uniquely determined.</p>
+
+<p>Now we define the multi-level graph \[
+\mathcal{M}(G;S_1,\dots,S_l) := \Big(V, E \cup \bigcup_{i=1,\dots,l}(E_i \cup U_i \cup D_i) \Big).
+\]</p>
 
 </article></slide><slide class=''><hgroup><h2>Multi-level Graph </h2><h3> Component Tree</h3></hgroup><article  id="multi-level-graph-component-tree" class="smaller ">
 
