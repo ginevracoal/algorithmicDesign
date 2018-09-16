@@ -7,7 +7,7 @@
 // #include "binary_heap.h"
 #include "list.h"
 
-#define MaxSize 50
+#define MaxSize 100
 #define NIL -1
 using namespace std;
 
@@ -42,15 +42,16 @@ class Graph {
   Graph(int size) {
     this->size = size;  // parameter size shadows the class member with the same
                         // name, so the use of this-> is required
-    adj = new list<T>[size];  // allocates a new adjacency list
-    adj_list = new list<pair<T, int>>[size];
-    SCCs = new vector<vector<T>>[size];
+    adj = new list<T>[size + 1];  // allocates a new adjacency list
+    adj_list = new list<pair<T, int>>[size + 1];
+    SCCs = new vector<vector<T>>[size + 1];
   }
 
   ~Graph() {
     delete[] adj;
     delete[] adj_list;
     delete[] SCCs;
+    delete[] collapsed_graph;
   }
 
   // OBSERVERS
@@ -119,6 +120,9 @@ class Graph {
 
   // Solves single source shortest path problem using Dijkstra algorithm
   void Dijkstra(T src);  // takes a start node index
+
+  // Solves single source shortest path problem using A* algorithm
+  void Astar(T src);  // takes a start node index
 };
 
 #endif
