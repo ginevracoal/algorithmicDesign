@@ -76,7 +76,6 @@ bool* Graph<T>::UT_adj_matrix() {
   // now i should iterate according to topological sort
 
   //  DA FINIRE
-
   return *adj_matrix;
 }
 
