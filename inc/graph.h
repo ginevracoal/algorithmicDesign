@@ -6,6 +6,7 @@
 #include <vector>
 // #include "binary_heap.h"
 #include "list.h"
+// #include <list>
 
 #define MaxSize 100
 #define NIL -1
@@ -104,6 +105,7 @@ class Graph {
   // MODIFIERS
 
   // Adds the directed edge from node v to node w.
+  // void add_edge(T v, T w) { adj[v].push_front(w); } // era così!!
   void add_edge(T v, T w) { adj[v].push_back(w); }
 
   void add_edge(T from, T to, int weight) {
@@ -111,6 +113,10 @@ class Graph {
   }
 
   // ###### MAIN ALGORITHMS ######
+
+  // Search algorithms
+  void BFS(int s);
+  void DFS(int s);
 
   // Finds the strongly connected components using Tarjan algorithm
   void Tarjan_SCC();
@@ -124,5 +130,52 @@ class Graph {
   // Solves single source shortest path problem using A* algorithm
   void Astar(T src);  // takes a start node index
 };
+
+template <typename T>
+void Graph<T>::BFS(int s) {  // Node search in O(|V|+|E|)
+  cout << "\n###### Breadth First Search ######\n";
+  cout << "\nBFS(" << s << "): ";
+
+  bool *visited = new bool[size]{false};  // marks visited nodes
+  list<int> queue;                        // creates a queue for visited nodes
+
+  // Current node has been visited and is inside the queue
+  visited[s] = true;
+  queue.push_back(s);
+
+  while (!queue.empty()) {
+#ifdef DEBUG
+    cout << "\nCurrent queue: ";
+    queue.print();
+#endif
+
+    int curr = queue.front();
+    queue.pop_front();
+    cout << curr << " ";
+
+#ifdef DEBUG
+    cout << "\nCurrent queue: ";
+    queue.print();
+    cout << "\nadj(" << curr << "): ";
+#endif
+    for (auto it = adj[curr].begin(); it != adj[curr].end(); it++) {
+#ifdef DEBUG
+      cout << *it << " ";
+#endif
+      if (!visited[*it]) {
+        visited[*it] = true;
+        queue.push_back(*it);
+      }
+    }
+  }
+
+  cout << endl;
+
+  delete visited;
+}
+
+template <typename T>
+void Graph<T>::DFS(int s) {  // Node search in O(|V|+|E|)
+}
 
 #endif
