@@ -1,5 +1,5 @@
 /*
-Suffix array algorithm in O(n log n)
+Suffix array algorithm in O(n log namespace)
 */
 
 #ifndef __suffix_array__
@@ -23,6 +23,11 @@ int cmp(struct suffix t1, struct suffix t2) {
     return t1.rank[1] < t2.rank[1];
   else
     return t1.rank[0] < t2.rank[0];
+}
+
+void print_array(int* p, int n) {
+  for (int i = 0; i < n; i++) cout << p[i] << " ";
+  cout << endl;
 }
 
 // Builds the suffix array on a given string
@@ -142,12 +147,10 @@ int* Suffix_Array(char* string, int n) {
     suffix_array[i] = suffixes[i].index;
   }
 
-  return suffix_array;
-}
+  cout << "\n\nSuffix array = ";
+  print_array(suffix_array, n);
 
-void print_array(int* p, int n) {
-  for (int i = 0; i < n; i++) cout << p[i] << " ";
-  cout << endl;
+  return suffix_array;
 }
 
 #endif
