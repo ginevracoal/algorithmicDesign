@@ -74,7 +74,6 @@ int select_pivot(T* A, int begin, int end, int j) {
 
   // std::cout << "\n\n[select pivot(A, " << begin << ", " << end << ", " << j
   //           << ")]";
-  std::cout << "\n n blocks: " << n_blocks << std::endl;
   // array contaning the medians for each block
   int* medians = new T[n_blocks];
   // std::vector<int> medians;
@@ -89,6 +88,7 @@ int select_pivot(T* A, int begin, int end, int j) {
       cend = end;
 
 #ifdef DEBUG
+    std::cout << "\n n blocks: " << n_blocks << std::endl;
     std::cout << "\n  indexes " << cbegin << "-" << cend;
 #endif
 
@@ -99,8 +99,10 @@ int select_pivot(T* A, int begin, int end, int j) {
     medians[i] = A[(cend + cbegin) / 2];
   }
 
+#ifdef DEBUG
   std::cout << "\n Medians: ";
   print(medians, 0, n_blocks);
+#endif
 
   // median of the medians
   T median = select(medians, 0, n_blocks, (n_blocks + 1) / 2);
@@ -152,12 +154,12 @@ std::pair<int, int> tri_partition(T* A, int begin, int end, int pivot) {
   while (A[k.second] == pivot) {
     k.second++;
   }
-  // k.second--;
-
+// k.second--;
+#ifdef DEBUG
   std::cout << "\n A: ";
   print(A, begin, end);
   std::cout << "\n k_1 = " << k.first << " and k_2 = " << k.second << std::endl;
-
+#endif
   return k;
 }
 
@@ -168,9 +170,10 @@ int select(T* A, int begin, int end, int j) {
     return A[begin];
   }
 
+#ifdef DEBUG
   std::cout << "\n\nSelect on: ";
   print(A, begin, end);
-
+#endif
   // if the block has dimension smaller than j
   // if (end - begin <= j) {
   //   std::cout << "\nblock smaller than j";
@@ -181,18 +184,25 @@ int select(T* A, int begin, int end, int j) {
   // }
 
   int pivot = select_pivot(A, begin, end, j);
+#ifdef DEBUG
   std::cout << "\n median of the medians: " << pivot;
-
+#endif
   std::pair<int, int> k = tri_partition(A, begin, end, pivot);
 
   if (j < k.first) {
+#ifdef DEBUG
     std::cout << "\n j=" << j << " < k_1";
+#endif
     return select(A, begin, k.first - 1, j);
   } else if (j > k.second) {
+#ifdef DEBUG
     std::cout << "\n j=" << j << " > k_2";
+#endif
     return select(A, k.second, end, j);
   } else {
+#ifdef DEBUG
     std::cout << "\n j=" << j;
+#endif
     return pivot;  // same as A[j]
   }
 }
