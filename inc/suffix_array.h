@@ -1,5 +1,5 @@
 /*
-Suffix array algorithm.
+Suffix array algorithm in O(n log n)
 */
 
 #ifndef __suffix_array__
@@ -149,14 +149,5 @@ void print_array(int* p, int n) {
   for (int i = 0; i < n; i++) cout << p[i] << " ";
   cout << endl;
 }
-
-// void print_status(struct suffixes, int n) {
-//   cout << "\nindex \tsuffix \trank \tnext rank";
-//   for (int i = 0; i < n; ++i) {
-//     cout << endl << suffixes[i].index << "\t";
-//     for (int j = suffixes[i].index; j < n; j++) cout << string[j];
-//     cout << "\t" << suffixes[i].rank[0] << "\t" << suffixes[i].rank[1];
-//   }
-// }
 
 #endif

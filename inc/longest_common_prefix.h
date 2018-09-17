@@ -1,0 +1,3 @@
+/*
+This algorithm finds the longest common prefix array for the suffix array.
+*/
