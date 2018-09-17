@@ -31,10 +31,11 @@ class list {
   // function cannot change the value of the object.
   void push_back(const T&);   // push from the head
   void push_front(const T&);  // push from the tail
-  void pop_back();
+  // void pop_back();
   void pop_front();
-  void clear();
+  // void clear();
   void insert(const T&);
+  T& front();
 
   // Iterators
   class iterator;
@@ -49,6 +50,7 @@ class list {
 
   // Observers
   void print();
+  bool empty() { return head.get() == nullptr; }
 
   // ~list();
 };
@@ -83,6 +85,10 @@ class list<T>::iterator {
   bool operator!=(const iterator& other) {
     return this->current != other.current;
   }
+
+  bool operator==(const iterator& other) {
+    return this->current == other.current;
+  }
 };
 
 template <typename T>
@@ -111,10 +117,36 @@ void list<T>::push_front(const T& v) {
   ++size;
 }
 
+// remove the first element in the container
+template <typename T>
+void list<T>::pop_front() {
+  if (head.get() != nullptr) {
+#ifdef DEBUG
+    cout << "\npop_front(" << head->val << ")";
+#endif
+    // unique_ptr<node> tmp = new node{head->next.get()};
+    auto tmp = move(head.get());
+    head.reset(move(tmp->next.get()));
+    // head.reset(head->next.get());
+    --size;
+  }
+}
+
+template <typename T>
+T& list<T>::front() {
+  return head->val;
+}
+
+// template <typename T>
+// T& list<T>::back() {
+//   for (auto it = this.begin(); it != this.end(); it++) {
+//   }
+//   return *it->val;
+// }
+
 // still have do implement these
-void pop_back();
-void pop_front();
-void clear();
+// void pop_back();
+// void clear();
 
 template <typename T>
 void list<T>::insert(const T& v) {
@@ -126,7 +158,8 @@ void list<T>::insert(const T& v) {
 
 template <typename T>
 void list<T>::print() {  // it cannot modify any member of list
-  for (auto it = this->begin(); it != this->end(); ++it) cout << *it << endl;
+  for (auto it = this->begin(); it != this->end(); ++it) cout << *it << " ";
+  cout << endl;
 }
 
 #endif
