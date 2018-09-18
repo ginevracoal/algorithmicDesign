@@ -5,7 +5,6 @@
 #include <stack>
 #include <vector>
 
-#include <list>
 // #include "list.h"
 
 #define MaxSize 100
@@ -134,3 +133,7 @@ class Graph {
 };
 
 #endif
+
+// STD
+
+#include <list>
