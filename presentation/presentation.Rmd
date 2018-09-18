@@ -1,0 +1,325 @@
+---
+title: Multi-level Graphs <br> for Railway Timetables
+author: "Ginevra Carbone"
+date: "*Settembre 2018*"
+output:
+  ioslides_presentation:
+    fig_width: 7
+    incremental: yes
+    smaller: yes
+    widescreen: yes
+  html_document:
+    toc: yes
+editor_options:
+  chunk_output_type: inline
+always_allow_html: yes
+---
+
+## Introduction
+
+<!-- spiegare perché l'algoritmo sul grafo di base non è efficiente -->
+
+<div align='center'>
+The **multi-level graph structure** is a *hierarchical decomposition* tecnique which allows to speed-up shortest path problems on very big graphs. 
+
+The idea of this algorithm is to create a *shortest-path distance preserving* graph smaller than the original one, on which one can efficiently solve computationally expensive problems.
+
+<br>
+
+After a formal description of the method, we'll look at the improvements in the <br> performance of *Dijkstra's algorithm* applied to **railway timetable information graphs**.
+</div>
+
+## Multi-level Graphs {.build}
+
+<div align='center'>
+Let $G = (V,E)$ be a weighted directed graph with non-negative weights. 
+
+We want to extend both the number of edges and the number of *levels* of this graph, is such a way that **single-pair shortest path** algorithms can be applied efficiently on a smaller subgraph.
+</div>
+
+<br>
+
+We start from a nested sequence of subsets of nodes
+$$
+V \supset S_1 \supset \dots \supset S_l
+$$
+which will be used to define the associated **multi-level graph** $\mathcal{M}(G;S_1,\dots,S_l)$ and its $l+1$ levels.
+
+## Multi-level Graphs | Levels {.build}
+
+Each level is a graph contaning all the nodes from $S_i$ and three possible kinds of edges:
+
+- *level edges* $E_i\subseteq S_i \times S_i$;
+- *upward edges* $U_i \subseteq (S_{i-1}\setminus S_i) \times S_i$;
+- *downward edges* $D_i \subseteq S_i \times (S_{i-1}\setminus S_i)$.
+
+<div class='columns-2'>
+<br>
+
+The **i-th level** of $\mathcal{M}(G;S_1,\dots,S_l)$ is defined as the triple $L_i := (E_i, U_i, D_i)$.
+
+Level $0$ is set to $L_0 := (E, \emptyset, \emptyset)$. 
+
+<img src="images/multi_level_graph.png" width=480>
+
+</div>
+
+<!-- briefly comment the image and describe the levels and the edges... -->
+
+## Multi-level Graphs | Construction {.build}
+
+<div align='center'>
+The costruction of the levels is iterative:
+</div>
+
+<!-- , after building level $L_{i-1}$,  -->
+- At the *i-th step* for each node $u\in S_{i-1}$ consider a shortest-path tree $T_u$ in the graph $(S_{i-1},E_{i-1})$.
+ 
+- Level, upward and downward edges in the new level $L_i$ are chosen with the following condition:
+
+<div align='center'>
+Edge $(u,v)$ belongs to $L_i$ if and only if no internal <br> vertex of the shortest path $u-v$ in $L_u$ belongs to $S_i$. 
+</div>
+
+<!-- this means that the only edges of S_i occurring in the shortest path are u and v. -->
+
+Notice that, since the shortest paths are not generally unique, this construction is not uniquely determined.
+
+Now we define the **multi-level graph**
+$$
+\mathcal{M}(G;S_1,\dots,S_l) := \Big(V, E \cup \bigcup_{i=1,\dots,l}(E_i \cup U_i \cup D_i) \Big).
+$$
+
+## Multi-level Graphs | Connected components {.build}
+
+<div align='center'>
+Let's now consider the subgraphs of $G$ induced by the nodes in $V\setminus S_i$.
+</div>
+
+<div class='columns-2'>
+
+<img src="images/component_tree.png" width=480>
+
+<br>
+
+We'll use the following notation for each subgraph:
+
+- $\mathcal{C}_i$ is the set of its connected components;
+- $C_i^v$ is the connected component in $\mathcal{C}_i$ containing $v\in V\setminus S_i$;
+- $v\in S_i$ is said to be *adjacent* to a component $C\in\mathcal{C}_i$ if there is at least one edge connecting them. 
+
+</div>
+
+## Multi-level Graphs | Connected components 
+
+<div align='center'>
+Let's now consider the subgraphs of $G$ induced by the nodes in $V\setminus S_i$.
+</div>
+
+<div class='columns-2'>
+
+<img src="images/component_tree.png" width=480>
+
+<br>
+
+<!-- In this framework, e -->
+Edges $E_i$ represent the shortest paths *between vertices of $S_i$ passing through a connected component*.
+
+Edges $U_i$ represent the shortest paths *from a vertex inside a connected component to all vertices of $S_i$ adjacent to that component*. 
+
+Edges $D_i$ represent the shortest paths *from the adjacent vertices of a component to a vertex of that component*.
+
+</div>
+
+## Multi-level Graphs | Component Tree
+
+<div class='columns-2'>
+
+<img src="images/component_tree.png" width=480>
+
+<br>
+
+Now we define the structure in which we are going to search for the shortest-distance preserving paths between nodes of $G$, the so called **component tree**:
+
+- *Nodes* are made by the components in $\mathcal{C}_1\cup\dots\cup\mathcal{C}_l$, a root $C_{l+1}$ and a leaf $C_0^v$ for each node $v\in V$;
+- *Edges* are built as follows:
+    - the parent of a leaf $C_0^v$ is $C_{l+1}$ if the largest index such as $v\in S_i$ is $i=l$, and $C_{i+1}^v\in \mathcal{C}_{i+1}$ otherwise;
+    - the parent of any other component $C_i\in \mathcal{C}_i$ is the component $C_{i+1}\in\mathcal{C}_{i+1}$ such that $V(C_i)\subseteq V(C_{i+1})$.
+    
+</div>
+    
+## Multi-level Graphs | Component Tree
+    
+Given two nodes $s,v\in V$, we define the subgraph $\mathcal{M}_{st}\subseteq\mathcal{M}$ induced by the edge set
+$$
+\begin{align}
+E_{st} := E_{L-1} 
+&\cup \bigcup_{i=k,\dots,L-1} \{(u,v)\in U_i | u \in Adj(C_{i-1}^s), v\in Adj(C_i^s) \\
+&\cup \bigcup_{i=k',\dots,L-1} \{(u,v)\in D_i | u \in Adj(C_{i}^t), v\in Adj(C_{i-1}^t)
+\}
+\end{align}
+$$
+<!-- level L-1 edges + upw edges from s + dwd edges to t  -->
+where $L$ is the smallest index such that $C_L^s=C_L^t$.<!-- smallest common ancestor of the leaves-->
+<!-- k and k' are the levels of the parents of the leaves -->
+
+<br>
+
+<div align='center'>
+**Lemma.** The length of the shortest s-t path is the same in the graphs $G$ and $\mathcal{M}_{st}$.
+</div>
+
+## Graph representation of Timetable Information | Adapting the Multi-level Graph approach {.build}
+
+<!-- Now we want to apply the method just described to timetable information systems. In order to do that we need to give some slightly different definitions. -->
+<div align='center'>
+Our goal is to provide a train connection with **earliest arrival time**.
+
+We assume that the timetable is periodic with period of one day and reduce the problem to a graph *shortest-path* problem.
+
+</div>
+
+## Graph representation of Timetable Information | Adapting the Multi-level Graph approach {.build}
+
+<div class='columns-2'>
+
+<img src="images/train_graph.png" width=480>
+
+<br>
+
+A **Train Graph ($TG$)** contains a vertex for every arrival and departure time and two possible edges:
+
+- *stay edges*, inside a single station, are ordered according to arrival and departure in the time period and weighted with the duration of the stay;
+- *travel edges*, between different stations, are also connected according to timing, but weighted with the duration of the travel.
+
+</div>
+
+Notice that the problem inside this graph is reduced to a **single-source some-target** shortest path problem, due to the set of vertices belonging to a single station. 
+
+## Graph representation of Timetable Information | Adapting the Multi-level Graph approach {.build}
+
+<div align='center'>
+We need an additional structure.
+</div>
+
+<div class='columns-2'>
+
+<img src="images/station_graph.png" width=480>
+
+<br>
+
+A **Station Graph ($SG$)** contains a vertex for each station and is unweighted.
+
+Two stations are connected if and only if there is at least a travel edge between them in the train graph.
+
+</div>
+
+## Graph representation of Timetable Information | Adapting the Multi-level Graph approach {.build}
+
+Now we need to define a modified version of the multi-level graph $\mathcal{M}(TG)$.
+
+- There are two *nested sequences of sets*: 
+    - $l$ sets of stations $V(SG) \supset \Sigma_1 \supset \dots \supset \Sigma_l$;
+    - $l$ sets of timing nodes $V(TG) \supset S_1 \supset \dots \supset S_l$.
+- The *component tree* is computed only inside the station graph.
+    - The is one leaf $C^R$ for each station $R$;
+    - $Adj(C^R) = T(R)$ is the set of all arrivals and departures belonging to the station $R$.
+- A vertex $v\in TG$ is said to be *adjacent* to a component $C$ of $SG$ if $v$ and $C$ are connected by at least one edge in the station graph.
+
+<br>
+
+<div align='center'>
+**Proposition. ** For each departure node $v$ in $TG$ belonging to the station $s$ in $SG$, the shortest-path from $v$ to one of the nodes in $s$ is the same in the graphs $TG$ and $\mathcal{M}_{st}(TG)$.
+</div>
+
+<!-- This means that in order to solve our problem it is sufficient to compute the shortest path problem inside $\mathcal{M}_{st}(TG)$. -->
+
+## Results {.build}
+
+The experiments conducted in the reference article *"Using Multi-level Graphs for Timetable Information in Railway Systems", Frank Schulz, Dorothea Wagner and Christos Zaroliagis, Springer-Verlag Berlin, 2002* involve train data of German railways consisting of: 6960 stations, 931746 vertices and 1397619 edges.
+
+Their goal is to compare the performances for the computation of *Dijkstra's algorithm* in the train graph against the subgraph of $\mathcal{M}$.
+
+<!-- We consider two possible time measures (notice that only the first one measures the computation of $\mathcal{M}$): -->
+<!-- - **edge-speedup** is the same ratio, but considering the number of edges in the two graphs. -->
+
+Let **CPU-speedup** be the ratio between CPU time needed in $TG$ and in $\mathcal{M}$ (notice that this also measures the computation of $\mathcal{M}$) and **space consumption** be the relative size of $\mathcal{M}$ in terms of number of edges.
+
+Then, the improvement in performances is computed as
+$$
+efficency = \frac{\text{CPU speedup}}{\text{space consumption}}= \frac{time(TG)/time(\mathcal{M})}{size(\mathcal{M})/size(TG)}.
+$$
+
+## Results | Selection Criteria in 2-level graphs {.build}
+
+Consider three different sequences of nested sets $\Sigma_1^k\supset\dots\supset\Sigma_{10}^k$ for $k=1,2,3$.
+
+- The first level $\Sigma_1^k$ is the same for each $k$. It contains all the $1974$ stations in $SG$ with degree greater than $2$;
+- The other levels have equally spaced sizes in the range from $1974$ to $50$ but using different selection methods for the stations.
+
+
+
+<div class='columns-2'>
+
+<img src="images/number_edges.png" width=480>
+
+<br>
+
+This plot shows the **number of edges** (size of the graph) of the first level in the 2-level graph $\mathcal{M(\Sigma_i^k)}$ based on the different *selection criteria*:
+
+- the **importance** assigned to each station in the data table;
+- the highest **degree**;
+- **random** stations (too many edges!).
+
+</div>
+
+## Results | Speedup and efficency in 2-level graphs {.build}
+
+<div align='center'>
+We now focus on the performances of the *importance*-based sequence.
+</div>
+
+<!-- <div class='columns-2'> -->
+<img src="images/speedup.png" width=480, height=280>
+<img src="images/efficency.png" width=480, height=280>
+
+<!-- </div> -->
+
+Both speedup and efficency increase with a decreasing number of stations, but we can notice a sudden drop from $\Sigma_9$ to $\Sigma_{10}$. 
+
+<div align='center'>
+This is because the number of stations has to be *small enough to reduce the number of edges but big enough to avoid computing the shortest paths in level 0*.
+</div>
+
+<!-- The experiments with two levels show that the best performance is reached using set $\Sigma_9$ with *importance* or *degree* selection.  -->
+ 
+## Results | Multiple levels {.build}
+
+<div align='center'>
+In the case of an $l$-level graph we follow an iterative approach.
+</div>
+
+Given a $l-1$-level graph and its sequence $\Sigma_1\supset \dots\supset \Sigma_{l-2}$ we choose the best $\Sigma_{l-2}\subset\Sigma_{l-1}$ in terms of efficiency.
+
+If there are no more smaller sets available from the originally constructed sequence, we generate $l$ new ones and choose the best one between them.
+
+<img src="images/multiple_levels.png" width=900, height=280>
+
+<!-- where edge-speedup is intented as an alternative time measure -->
+
+## Conclusions {.build}
+
+<div align='center'>
+We explored an interesting graph decomposition approach for search algorithms, focusing on the performances of *Dijkstra's algorithm*.
+</div>
+<br>
+<div align='center'>
+*Random selection* of nodes turned out to be the worst possible choice of sets.
+</div>
+<br>
+<div align='center'>
+Experiments with values of $l$ larger than 4 revealed no further improvements in the efficiency, but they also showed that *different levels require sifferent sizes of subsets*.
+</div>
+
+
+# Thank you.
