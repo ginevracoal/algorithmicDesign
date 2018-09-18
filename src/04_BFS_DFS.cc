@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../inc/graph.h"
+#include "../inc/search.h"
 
 int main() {
   Graph<int> g(4);

@@ -31,11 +31,12 @@ class list {
   // function cannot change the value of the object.
   void push_back(const T&);   // push from the head
   void push_front(const T&);  // push from the tail
-  // void pop_back();
+  void pop_back();
   void pop_front();
   // void clear();
   void insert(const T&);
   T& front();
+  T& back();
 
   // Iterators
   class iterator;
@@ -104,13 +105,13 @@ class list<T>::const_iterator : public list<T>::iterator {
 // MEMBER FUNCTIONS
 
 template <typename T>
-void list<T>::push_back(const T& v) {
+void list<T>::push_front(const T& v) {
   head.reset(new node{v, head.release()});
   ++size;
 }
 
 template <typename T>
-void list<T>::push_front(const T& v) {
+void list<T>::push_back(const T& v) {
   node* tmp{head.get()};
   while (tmp->next.get() != nullptr) tmp = tmp->next.get();
   tmp->next.reset(new node{v});
@@ -119,17 +120,31 @@ void list<T>::push_front(const T& v) {
 
 // remove the first element in the container
 template <typename T>
-void list<T>::pop_front() {
-  if (head.get() != nullptr) {
-#ifdef DEBUG
-    cout << "\npop_front(" << head->val << ")";
-#endif
-    // unique_ptr<node> tmp = new node{head->next.get()};
-    auto tmp = move(head.get());
-    head.reset(move(tmp->next.get()));
-    // head.reset(head->next.get());
-    --size;
+void list<T>::pop_back() {
+  if (!empty()) {
+    node* tmp = head.get();
+    node* prev = nullptr;
+    while (tmp->next != nullptr) {
+      prev = tmp;
+      tmp = tmp->next.get();
+    }
+    prev->next.reset(nullptr);
   }
+}
+
+template <typename T>
+void list<T>::pop_front() {
+  if (!empty()) {
+    node* tmp = head->next.get();
+    head.reset(tmp);
+  }
+}
+
+template <typename T>
+T& list<T>::back() {
+  node* tmp = head.get();
+  while (tmp->next != nullptr) tmp = tmp->next.get();
+  return tmp->val;
 }
 
 template <typename T>
@@ -137,23 +152,12 @@ T& list<T>::front() {
   return head->val;
 }
 
-// template <typename T>
-// T& list<T>::back() {
-//   for (auto it = this.begin(); it != this.end(); it++) {
-//   }
-//   return *it->val;
-// }
-
-// still have do implement these
-// void pop_back();
-// void clear();
-
 template <typename T>
 void list<T>::insert(const T& v) {
   if (head.get() == nullptr) {
     head.reset(new node{v});
   } else
-    push_front(v);
+    push_back(v);
 }
 
 template <typename T>
