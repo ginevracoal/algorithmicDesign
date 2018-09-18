@@ -53,6 +53,14 @@ void LCP(char* string, int n, int* SA) {
     // array
     int j = SA[inv_SA[i] + 1];
 
+#ifdef DEBUG
+    cout << "\ncomputing lcp(";
+    for (int z = i; z < n; ++z) cout << string[z];
+    cout << ",";
+    for (int z = j; z < n; ++z) cout << string[z];
+    cout << ")";
+#endif
+
     // While characters starting from k match (they surely match till k)
     // increment k
     while (i + k < n && j + k < n && string[i + k] == string[j + k]) k++;
@@ -64,6 +72,7 @@ void LCP(char* string, int n, int* SA) {
   }
 
 #ifdef DEBUG
+  cout << endl;
   for (int i = 0; i < n; ++i) {
     cout << "\nlcp[" << i << "] = longest common prefix of '";
     for (int z = SA[i]; z < n; ++z) cout << string[z];
