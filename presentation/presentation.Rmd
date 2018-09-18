@@ -1,6 +1,5 @@
 ---
 title: Multi-level Graphs <br> for Railway Timetables
-subtitle: Presenting F. Schulz, D. Wagner and C. Zaroliagis research paper.
 author: "Ginevra Carbone"
 date: "*Settembre 2018*"
 output:
@@ -86,7 +85,7 @@ Edge $(u,v)$ belongs to $L_i$ if and only if no internal <br> vertex of the shor
 
 Notice that, since the shortest paths are not generally unique, this construction is not uniquely determined.
 
-Now we define the multi-level graph
+Now we define the **multi-level graph**
 $$
 \mathcal{M}(G;S_1,\dots,S_l) := \Big(V, E \cup \bigcup_{i=1,\dots,l}(E_i \cup U_i \cup D_i) \Big).
 $$
@@ -235,12 +234,92 @@ Now we need to define a modified version of the multi-level graph $\mathcal{M}(T
 
 <!-- This means that in order to solve our problem it is sufficient to compute the shortest path problem inside $\mathcal{M}_{st}(TG)$. -->
 
-## Experiments
+## Results {.build}
 
-## Experiments | Two levels
+The experiments conducted in the reference article *"Using Multi-level Graphs for Timetable Information in Railway Systems", Frank Schulz, Dorothea Wagner and Christos Zaroliagis, Springer-Verlag Berlin, 2002* involve train data of German railways consisting of: 6960 stations, 931746 vertices and 1397619 edges.
 
-## Experiments | Multiple levels
+Their goal is to compare the performances for the computation of *Dijkstra's algorithm* in the train graph against the subgraph of $\mathcal{M}$.
 
-## Conclusions
+<!-- We consider two possible time measures (notice that only the first one measures the computation of $\mathcal{M}$): -->
+<!-- - **edge-speedup** is the same ratio, but considering the number of edges in the two graphs. -->
+
+Let **CPU-speedup** be the ratio between CPU time needed in $TG$ and in $\mathcal{M}$ (notice that this also measures the computation of $\mathcal{M}$) and **space consumption** be the relative size of $\mathcal{M}$ in terms of number of edges.
+
+Then, the improvement in performances is computed as
+$$
+efficency = \frac{\text{CPU speedup}}{\text{space consumption}}= \frac{time(TG)/time(\mathcal{M})}{size(\mathcal{M})/size(TG)}.
+$$
+
+## Results | Selection Criteria in 2-level graphs {.build}
+
+Consider three different sequences of nested sets $\Sigma_1^k\supset\dots\supset\Sigma_{10}^k$ for $k=1,2,3$.
+
+- The first level $\Sigma_1^k$ is the same for each $k$. It contains all the $1974$ stations in $SG$ with degree greater than $2$;
+- The other levels have equally spaced sizes in the range from $1974$ to $50$ but using different selection methods for the stations.
+
+
+
+<div class='columns-2'>
+
+<img src="images/number_edges.png" width=480>
+
+<br>
+
+This plot shows the **number of edges** (size of the graph) of the first level in the 2-level graph $\mathcal{M(\Sigma_i^k)}$ based on the different *selection criteria*:
+
+- the **importance** assigned to each station in the data table;
+- the highest **degree**;
+- **random** stations (too many edges!).
+
+</div>
+
+## Results | Speedup and efficency in 2-level graphs {.build}
+
+<div align='center'>
+We now focus on the performances of the *importance*-based sequence.
+</div>
+
+<!-- <div class='columns-2'> -->
+<img src="images/speedup.png" width=480, height=280>
+<img src="images/efficency.png" width=480, height=280>
+
+<!-- </div> -->
+
+Both speedup and efficency increase with a decreasing number of stations, but we can notice a sudden drop from $\Sigma_9$ to $\Sigma_{10}$. 
+
+<div align='center'>
+This is because the number of stations has to be *small enough to reduce the number of edges but big enough to avoid computing the shortest paths in level 0*.
+</div>
+
+<!-- The experiments with two levels show that the best performance is reached using set $\Sigma_9$ with *importance* or *degree* selection.  -->
+ 
+## Results | Multiple levels {.build}
+
+<div align='center'>
+In the case of an $l$-level graph we follow an iterative approach.
+</div>
+
+Given a $l-1$-level graph and its sequence $\Sigma_1\supset \dots\supset \Sigma_{l-2}$ we choose the best $\Sigma_{l-2}\subset\Sigma_{l-1}$ in terms of efficiency.
+
+If there are no more smaller sets available from the originally constructed sequence, we generate $l$ new ones and choose the best one between them.
+
+<img src="images/multiple_levels.png" width=900, height=280>
+
+<!-- where edge-speedup is intented as an alternative time measure -->
+
+## Conclusions {.build}
+
+<div align='center'>
+We explored an interesting graph decomposition approach for search algorithms, focusing on the performances of *Dijkstra's algorithm*.
+</div>
+<br>
+<div align='center'>
+*Random selection* of nodes turned out to be the worst possible choice of sets.
+</div>
+<br>
+<div align='center'>
+Experiments with values of $l$ larger than 4 revealed no further improvements in the efficiency, but they also showed that *different levels require sifferent sizes of subsets*.
+</div>
+
 
 # Thank you.
