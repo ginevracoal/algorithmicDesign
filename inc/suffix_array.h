@@ -120,7 +120,7 @@ int* Suffix_Array(char* string, int n) {
 
 #ifdef DEBUG
     cout << "\n\nAlso updating next rank:\n";
-    cout << "\nindex \trank \tnext rank";
+    cout << "\nindex \tsuffix \trank \tnext rank";
     for (int i = 0; i < n; ++i) {
       cout << endl << suffixes[i].index << "\t";
       for (int j = suffixes[i].index; j < n; j++) cout << string[j];
@@ -133,7 +133,7 @@ int* Suffix_Array(char* string, int n) {
 
 #ifdef DEBUG
     cout << "\n\nAfter sorting:\n";
-    cout << "\nindex \trank \tnext rank";
+    cout << "\nindex \tsuffix \trank \tnext rank";
     for (int i = 0; i < n; ++i) {
       cout << endl << suffixes[i].index << "\t";
       for (int j = suffixes[i].index; j < n; j++) cout << string[j];
