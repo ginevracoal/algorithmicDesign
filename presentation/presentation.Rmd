@@ -30,7 +30,7 @@ The idea of this algorithm is to create a *shortest-path distance preserving* gr
 After a formal description of the method, we'll look at the improvements in the <br> performance of *Dijkstra's algorithm* applied to **railway timetable information graphs**.
 </div>
 
-## Multi-level Graph {.build}
+## Multi-level Graphs {.build}
 
 <div align='center'>
 Let $G = (V,E)$ be a weighted directed graph with non-negative weights. 
@@ -46,7 +46,7 @@ V \supset S_1 \supset \dots \supset S_l
 $$
 which will be used to define the associated **multi-level graph** $\mathcal{M}(G;S_1,\dots,S_l)$ and its $l+1$ levels.
 
-## Multi-level Graph | Levels {.build}
+## Multi-level Graphs | Levels {.build}
 
 Each level is a graph contaning all the nodes from $S_i$ and three possible kinds of edges:
 
@@ -67,7 +67,7 @@ Level $0$ is set to $L_0 := (E, \emptyset, \emptyset)$.
 
 <!-- briefly comment the image and describe the levels and the edges... -->
 
-## Multi-level Graph | Construction {.build}
+## Multi-level Graphs | Construction {.build}
 
 <div align='center'>
 The costruction of the levels is iterative:
@@ -91,7 +91,7 @@ $$
 \mathcal{M}(G;S_1,\dots,S_l) := \Big(V, E \cup \bigcup_{i=1,\dots,l}(E_i \cup U_i \cup D_i) \Big).
 $$
 
-## Multi-level Graph | Connected components {.build}
+## Multi-level Graphs | Connected components {.build}
 
 <div align='center'>
 Let's now consider the subgraphs of $G$ induced by the nodes in $V\setminus S_i$.
@@ -111,7 +111,7 @@ We'll use the following notation for each subgraph:
 
 </div>
 
-## Multi-level Graph | Connected components 
+## Multi-level Graphs | Connected components 
 
 <div align='center'>
 Let's now consider the subgraphs of $G$ induced by the nodes in $V\setminus S_i$.
@@ -132,11 +132,108 @@ Edges $D_i$ represent the shortest paths *from the adjacent vertices of a compon
 
 </div>
 
-## Multi-level Graph | Component Tree
+## Multi-level Graphs | Component Tree
 
-T
+<div class='columns-2'>
 
-## Graph representation of Timetable Information | Adapting the Multi-level Graph approach
+<img src="images/component_tree.png" width=480>
+
+<br>
+
+Now we define the structure in which we are going to search for the shortest-distance preserving paths between nodes of $G$, the so called **component tree**:
+
+- *Nodes* are made by the components in $\mathcal{C}_1\cup\dots\cup\mathcal{C}_l$, a root $C_{l+1}$ and a leaf $C_0^v$ for each node $v\in V$;
+- *Edges* are built as follows:
+    - the parent of a leaf $C_0^v$ is $C_{l+1}$ if the largest index such as $v\in S_i$ is $i=l$, and $C_{i+1}^v\in \mathcal{C}_{i+1}$ otherwise;
+    - the parent of any other component $C_i\in \mathcal{C}_i$ is the component $C_{i+1}\in\mathcal{C}_{i+1}$ such that $V(C_i)\subseteq V(C_{i+1})$.
+    
+</div>
+    
+## Multi-level Graphs | Component Tree
+    
+Given two nodes $s,v\in V$, we define the subgraph $\mathcal{M}_{st}\subseteq\mathcal{M}$ induced by the edge set
+$$
+\begin{align}
+E_{st} := E_{L-1} 
+&\cup \bigcup_{i=k,\dots,L-1} \{(u,v)\in U_i | u \in Adj(C_{i-1}^s), v\in Adj(C_i^s) \\
+&\cup \bigcup_{i=k',\dots,L-1} \{(u,v)\in D_i | u \in Adj(C_{i}^t), v\in Adj(C_{i-1}^t)
+\}
+\end{align}
+$$
+<!-- level L-1 edges + upw edges from s + dwd edges to t  -->
+where $L$ is the smallest index such that $C_L^s=C_L^t$.<!-- smallest common ancestor of the leaves-->
+<!-- k and k' are the levels of the parents of the leaves -->
+
+<br>
+
+<div align='center'>
+**Lemma.** The length of the shortest s-t path is the same in the graphs $G$ and $\mathcal{M}_{st}$.
+</div>
+
+## Graph representation of Timetable Information | Adapting the Multi-level Graph approach {.build}
+
+<!-- Now we want to apply the method just described to timetable information systems. In order to do that we need to give some slightly different definitions. -->
+<div align='center'>
+Our goal is to provide a train connection with **earliest arrival time**.
+
+We assume that the timetable is periodic with period of one day and reduce the problem to a graph *shortest-path* problem.
+
+</div>
+
+## Graph representation of Timetable Information | Adapting the Multi-level Graph approach {.build}
+
+<div class='columns-2'>
+
+<img src="images/train_graph.png" width=480>
+
+<br>
+
+A **Train Graph ($TG$)** contains a vertex for every arrival and departure time and two possible edges:
+
+- *stay edges*, inside a single station, are ordered according to arrival and departure in the time period and weighted with the duration of the stay;
+- *travel edges*, between different stations, are also connected according to timing, but weighted with the duration of the travel.
+
+</div>
+
+Notice that the problem inside this graph is reduced to a **single-source some-target** shortest path problem, due to the set of vertices belonging to a single station. 
+
+## Graph representation of Timetable Information | Adapting the Multi-level Graph approach {.build}
+
+<div align='center'>
+We need an additional structure.
+</div>
+
+<div class='columns-2'>
+
+<img src="images/station_graph.png" width=480>
+
+<br>
+
+A **Station Graph ($SG$)** contains a vertex for each station and is unweighted.
+
+Two stations are connected if and only if there is at least a travel edge between them in the train graph.
+
+</div>
+
+## Graph representation of Timetable Information | Adapting the Multi-level Graph approach {.build}
+
+Now we need to define a modified version of the multi-level graph $\mathcal{M}(TG)$.
+
+- There are two *nested sequences of sets*: 
+    - $l$ sets of stations $V(SG) \supset \Sigma_1 \supset \dots \supset \Sigma_l$;
+    - $l$ sets of timing nodes $V(TG) \supset S_1 \supset \dots \supset S_l$.
+- The *component tree* is computed only inside the station graph.
+    - The is one leaf $C^R$ for each station $R$;
+    - $Adj(C^R) = T(R)$ is the set of all arrivals and departures belonging to the station $R$.
+- A vertex $v\in TG$ is said to be *adjacent* to a component $C$ of $SG$ if $v$ and $C$ are connected by at least one edge in the station graph.
+
+<br>
+
+<div align='center'>
+**Proposition. ** For each departure node $v$ in $TG$ belonging to the station $s$ in $SG$, the shortest-path from $v$ to one of the nodes in $s$ is the same in the graphs $TG$ and $\mathcal{M}_{st}(TG)$.
+</div>
+
+<!-- This means that in order to solve our problem it is sufficient to compute the shortest path problem inside $\mathcal{M}_{st}(TG)$. -->
 
 ## Experiments
 
