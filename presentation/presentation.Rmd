@@ -15,17 +15,18 @@ editor_options:
 always_allow_html: yes
 ---
 
-## Introduction
+## Introduction {.build}
 
 <!-- spiegare perché l'algoritmo sul grafo di base non è efficiente -->
 
 <div align='center'>
 The **multi-level graph structure** is a *hierarchical decomposition* tecnique which allows to speed-up shortest path problems on very big graphs. 
-
+</div>
+<div align='center'>
 The idea of this algorithm is to create a *shortest-path distance preserving* graph smaller than the original one, on which one can efficiently solve computationally expensive problems.
-
+</div>
 <br>
-
+<div align='center'>
 After a formal description of the method, we'll look at the improvements in the <br> performance of *Dijkstra's algorithm* applied to **railway timetable information graphs**.
 </div>
 
@@ -122,7 +123,6 @@ Let's now consider the subgraphs of $G$ induced by the nodes in $V\setminus S_i$
 
 <br>
 
-<!-- In this framework, e -->
 Edges $E_i$ represent the shortest paths *between vertices of $S_i$ passing through a connected component*.
 
 Edges $U_i$ represent the shortest paths *from a vertex inside a connected component to all vertices of $S_i$ adjacent to that component*. 
