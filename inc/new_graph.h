@@ -4,10 +4,7 @@
 #include <iostream>
 #include <list>
 #include <stack>
-// #include <vector>
-
-#include "vector.h"
-// #include "stack.h"
+#include <vector>
 // #include "list.h"
 
 #define MaxSize 100
@@ -20,10 +17,13 @@ class Graph {
   // ###### BASIC GRAPH STRUCTURE ######
 
   // Nodes and edges
-  int size;                    // number of nodes
-  bool nodes[MaxSize]{false};  // says if node is in or not
+  int size;  // number of nodes
+  // bool nodes[MaxSize];  // node values
   list<T> *adj;  // pointer to array of adjacency lists (one list for each node)
   list<pair<T, int>> *adj_list;  // for int weighted graphs
+
+  class Node;
+  vector<Graph<T>::Node> nodes;
 
   // Strongly connected components
   int n_SCCs;                 // number of SCCs
@@ -40,20 +40,22 @@ class Graph {
   Graph<T> collapse();
   bool *UT_adj_matrix();
   void decollapse(T &);
-  void topological_sort_rec(int, bool[], list<T>);
-  list<T> topological_sort();
+  vector<vector<T>> *topological_sort();
 
  public:
   // Graph constructor and destructor
   Graph(int size) {
     this->size = size;  // parameter size shadows the class member with the same
                         // name, so the use of this-> is required
+
     adj = new list<T>[size + 1];  // allocates a new adjacency list
     adj_list = new list<pair<T, int>>[size + 1];
+
     SCCs = new vector<vector<T>>[size + 1];
   }
 
   ~Graph() {
+    // deallocate the arrays
     delete[] adj;
     delete[] adj_list;
     delete[] SCCs;
@@ -63,44 +65,38 @@ class Graph {
   // OBSERVERS
 
   void print_nodes() {
-    cout << "\nGraph nodes are: ";
-    for (int i = 0; i < size; ++i)
-      if (nodes[i] == 1) cout << i << " ";
-    cout << endl;
+    // cout << "\nGraph nodes are: ";
+    // for (int i = 0; i < size; ++i)
+    //   if (nodes[i] == 1) cout << i << " ";
+    // cout << endl;
   }
 
   void print_edges() {
     cout << "\nGraph edges are:";
-    for (int v = 0; v < size; ++v) {
-      for (typename list<T>::iterator it = adj[v].begin(); it != adj[v].end();
-           ++it) {
-        cout << endl << v << " -> " << *it;
-      }
-    }
+    for (auto node = nodes.begin(); node != nodes.end(); ++node)
+      for (auto it = node->adj.begin(); it != node->adj.end(); ++it)
+        cout << endl << node << " -> " << *it;
     cout << endl;
   }
 
-  void print_weighted_edges() {
-    cout << "\nWeighted graph edges are:";
-    for (int v = 0; v < size; ++v) {
-      for (auto it = adj_list[v].begin(); it != adj_list[v].end(); ++it) {
-        cout << endl
-             << v << " ----[" << (*it).second << "]---> " << (*it).first;
-      }
-    }
-    cout << endl;
-  }
+  // void print_weighted_edges() {
+  //   cout << "\nWeighted graph edges are:";
+  //   for (auto node = nodes.begin(); node != nodes.end(); ++node)
+  //     for (auto it = adj[v].begin(); it != adj[v].end(); ++it)
+  //       cout << endl
+  //            << node << " ----[" << (*it).second << "]---> " << (*it).first;
+  //   cout << endl;
+  // }
 
-  void print_adj() {
-    cout << "\nAdjacency lists:";
-    for (int v = 0; v < size; ++v) {
-      cout << "\nadj[" << v << "] = ";
-      for (typename list<T>::iterator i = adj[v].begin(); i != adj[v].end();
-           ++i)
-        cout << *i << " ";
-    }
-    cout << endl;
-  }
+  // void print_adj() {
+  //   cout << "\nAdjacency lists:";
+  //   for (auto node = nodes.begin(); node != nodes.end(); ++node) {
+  //     cout << "\nadj[" << v << "] = ";
+  //     for (auto it = adj[v].begin(); it != adj[v].end(); ++it)
+  //       cout << *it << " ";
+  //   }
+  //   cout << endl;
+  // }
 
   void print_SCCs() {
     n_SCCs = SCCs->size();
@@ -116,13 +112,11 @@ class Graph {
 
   // MODIFIERS
 
-  // Adds the directed edge from node v to node w.
-  // con il push back funziona tutto se uso la std
-  // void add_edge(T v, T w) { adj[v].push_front(w); } // era così!!
-  void add_edge(T v, T w) {
-    nodes[v] = true;
-    nodes[w] = true;
-    adj[v].push_back(w);
+  // Adds the directed edge from -> to
+  void add_edge(T from, T to) {
+    Node curr = nodes.at(from);
+    if (!curr) nodes.push_back(from);
+    curr->adj.push_back(to);
   }
 
   void add_edge(T from, T to, int weight) {
@@ -147,6 +141,25 @@ class Graph {
 
   // Solves single source shortest path problem using A* algorithm
   void Astar(T src);  // takes a start node index
+};
+
+template <typename T>
+class Graph<T>::Node {
+  // node value
+  T value;
+
+  // index of the SCC
+  int scc;
+
+  // weighted adjacency list
+  list<pair<T, int>> adj;
+
+ public:
+  Node(int v) {
+    value = v;
+    scc = NIL;
+    adj = new list<pair<T, int>>[size + 1];  // allocates a new adjacency list
+  }
 };
 
 #endif

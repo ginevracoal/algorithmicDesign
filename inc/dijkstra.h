@@ -1,7 +1,7 @@
 /*
 Dijkstra algorithm for single source shortest path problem on directed
 non-negative weighted graphs.
-The complexity of this algorithm is O(|E|+|V|log|V|) using a min-heap priority
+The complexity of this algorithm is O(|E|+|V|log_2|V|) using a min-heap priority
 queue.
 */
 
