@@ -4,6 +4,12 @@
 #include "graph.h"
 
 template <typename T>
+void print_list(list<T> l) {  // it cannot modify any member of list
+  for (auto it = l.begin(); it != l.end(); ++it) cout << *it << " ";
+  cout << endl;
+}
+
+template <typename T>
 void Graph<T>::BFS(int s) {  // Node search in O(|V|+|E|)
   cout << "\n###### Breadth First Search ######\n";
   cout << "\nBFS(" << s << "): ";
@@ -21,7 +27,9 @@ void Graph<T>::BFS(int s) {  // Node search in O(|V|+|E|)
     cout << "\nVisited nodes: ";
     for (int i = 0; i < size; ++i) cout << visited[i] << " ";
     cout << "\nCurrent queue: ";
-    queue.print();
+    // queue.print(); // list.h member function
+    print_list(queue);
+    cout << endl;
 #endif
 
     int curr = queue.front();
@@ -30,8 +38,9 @@ void Graph<T>::BFS(int s) {  // Node search in O(|V|+|E|)
 
 #ifdef DEBUG
     cout << "\nAfter pop queue: ";
-    queue.print();
-    cout << "\nadj(" << curr << "): ";
+    // queue.print();// list.h member function
+    print_list(queue);
+    cout << "adj(" << curr << "): ";
 #endif
 
     for (auto it = adj[curr].begin(); it != adj[curr].end(); it++) {

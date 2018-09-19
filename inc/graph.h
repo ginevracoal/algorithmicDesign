@@ -2,9 +2,9 @@
 #define __GRAPH__
 
 #include <iostream>
+#include <list>
 #include <stack>
 #include <vector>
-
 // #include "list.h"
 
 #define MaxSize 100
@@ -135,5 +135,3 @@ class Graph {
 #endif
 
 // STD
-
-#include <list>
