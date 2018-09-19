@@ -1,3 +1,15 @@
+/**
+Fischer Meyer algorithm solves the transitive closure problem with complexity
+O(|V|^log_2(7)) instead of the O(|V|^2|E|) given by the classical search.
+The steps are the following ones:
+- compute the SCC collapsed graph in order to get an acyclic graph
+- sort the nodes of this collapsed graph in such a way that the adjacency matrix
+is upper triangular.
+- split the matrix in 4 blocks and compute the transitive closure on them
+- reconstruct the transitive closure of G knowing that all the elements in a SCC
+have the same reachability set
+*/
+
 #ifndef __fischer_meyer__
 #define __fischer_meyer__
 
@@ -17,11 +29,14 @@ void print_matrix(T* M, int size) {
 // Compute the SCC collapsed graph, obtaining an acyclic graph.
 template <typename T>
 Graph<T> Graph<T>::collapse() {
+#ifdef DEBUG
   cout << "\n###### collapse ######\n";
-
+#endif
   // I also have to consider an additional space for the NULL terminator!
   // otherwise it gives a memory error.
-  Graph<T> collapsed_graph(n_SCCs + 1);
+  Graph<T> collapsed_graph(size);  // size should be n_SCCS, but graph is
+                                   // such that if I want number k in my
+                                   // graph I have to allocate k spaces.
 
   // For each SCC this tells me if it has already been inserted as a node in the
   // collapsed graph.
@@ -34,7 +49,7 @@ Graph<T> Graph<T>::collapse() {
       // scanning the adj list of the current node
       for (typename list<T>::iterator to = adj[*from].begin();
            to != adj[*from].end(); ++to) {
-        // If they do not belong to the same SCC and tadd the edge to the new
+        // If they do not belong to the same SCC and add the edge to the new
         // adjacency list.
         if (SCC_idx[*from] != SCC_idx[*to] &&
             SCC_node_inserted[SCC_idx[*from]] == false) {
@@ -54,35 +69,88 @@ Graph<T> Graph<T>::collapse() {
       }
     }
   }
+
   return collapsed_graph;
 }
+
+// template <typename T>
+// void Graph<T>::topological_sort_rec(int i, bool visited[], list<T> sorted) {
+//   visited[i] = true;
+
+//   for (auto it = adj[i].begin(); it != adj[i].end(); ++it)
+//     if (!visited[*it]) topological_sort_rec(*it, visited, sorted);
+
+//   sorted.push_back(i);
+// }
+
+// // Returns the topological sort of the SCCs
+// template <typename T>
+// list<T> Graph<T>::topological_sort() {
+//   list<T> sorted;
+
+//   bool* visited = new bool[size];
+//   for (auto it = unsorted.begin(); it != unsorted.end(); ++it)
+//     visited[i] = false;
+
+//   for (auto it = unsorted.begin(); it != unsorted.end(); ++it)
+//     // for (int i = 0; i < size && nodes[i] == true; ++i)
+//     if (visited[i] == false) topological_sort_rec(i, visited, sorted);
+
+// #ifdef DEBUG
+//   cout << "\nSorted nodes are: ";
+//   for (auto it = sorted.begin(); it != sorted.end(); ++it) cout << *it << "
+//   ";
+// #endif
+
+//   return sorted;
+// }
 
 // Convert adjacency list into upper triangular adjacency matrix.
 template <typename T>
 bool* Graph<T>::UT_adj_matrix() {
+#ifdef DEBUG
   cout << "\n###### UT_adj_matrix ######\n";
-  bool* adj_matrix[size * size];
+#endif
+
+  // Apply topological sort to the SCC in order to get a UT matrix
+  // list<T> sorted_nodes = topological_sort();
+
+  bool* collapsed_adj_matrix = new bool[n_SCCs * n_SCCs];
 
   // Initialize all nodes as only being adjacent to themselves.
-  for (int i = 0; i < size; ++i) {
-    for (int j = 0; j < size; ++j) {
+  for (int i = 0; i < n_SCCs; ++i) {
+    for (int j = 0; j < n_SCCs; ++j) {
       if (i == j)
-        *adj_matrix[i * size + j] = true;
+        collapsed_adj_matrix[i * n_SCCs + j] = true;
       else
-        *adj_matrix[i * size + j] = false;
+        collapsed_adj_matrix[i * n_SCCs + j] = false;
     }
   }
 
-  // now i should iterate according to topological sort
+  // Fill the adjacency matrix
+  for (int i = 0; i < n_SCCs; ++i)
+    for (auto it = adj[i].begin(); it != adj[i].end(); ++it) {
+      collapsed_adj_matrix[i * n_SCCs + *it] = true;
+    }
 
-  //  DA FINIRE
-  return *adj_matrix;
+#ifdef DEBUG
+  // print the adjacency matrix
+  for (int i = 0; i < n_SCCs; ++i) {
+    for (int j = 0; j < n_SCCs; ++j)
+      cout << collapsed_adj_matrix[i * size + j] << " ";
+    cout << endl;
+  }
+#endif
+
+  return collapsed_adj_matrix;
 }
 
 // Compute the transitive closure of the adjacency matrix.
 template <typename T>
 void Graph<T>::decollapse(T& M) {
+#ifdef DEBUG
   cout << "\n###### decollapse ######\n";
+#endif
 }
 
 template <typename T>
@@ -91,16 +159,21 @@ void Graph<T>::Fischer_Meyer() {
   this->Tarjan_SCC();  // Theta(|V|+|E|)
 
   // Calculate the collapsed graph from the SCCs
-  // Graph<T> collapsed_graph(this->n_SCCs);
   Graph<T> collapsed_graph = this->collapse();  // O(|V|^2) as topological sort
+
+#ifdef DEBUG
+  collapsed_graph.print_nodes();
   collapsed_graph.print_edges();
   collapsed_graph.print_adj();
+#endif
 
   // Create an upper triangular adjacency matrix
-  bool* M = collapsed_graph.UT_adj_matrix();  // time complexity????
+  // bool* M = collapsed_graph.UT_adj_matrix();  // complexity????
 
-  //   // Get the transitive closure of the matrix
+  //   // Compute the transitive closure of the matrix
   //   return this->decollapse(&M);  // O(|V|^2)
+
+  // delete[] M;
 }
 
 #endif

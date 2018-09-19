@@ -89,6 +89,13 @@ void Graph<T>::Tarjan_SCC_rec(int v, T *disc, T *lowlink, stack<T> *Q,
      */
     vector<T> component;  // new scc
 
+    // // using list
+    // while (Q->front() != v) {
+    //   z = Q->front();
+    //   onStack[z] = false;
+    //   Q->pop_front();
+
+    // using stack
     while (Q->top() != v) {
       z = Q->top();
       onStack[z] = false;
@@ -101,14 +108,18 @@ void Graph<T>::Tarjan_SCC_rec(int v, T *disc, T *lowlink, stack<T> *Q,
 #endif
     }
 
-    z = Q->top();
+    // z = Q->front();  // list
+    z = Q->top();  // stack
 
 #ifdef DEBUG
     cout << z << "(" << disc[z] << "," << lowlink[z] << ") \n";
 #endif
 
     onStack[z] = false;
-    Q->pop();
+
+    // Q->pop_front();  // list
+    Q->pop();  // stack
+
     component.push_back(z);
     SCCs->push_back(component);
   }
