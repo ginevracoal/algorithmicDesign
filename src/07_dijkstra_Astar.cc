@@ -1,7 +1,7 @@
 #include <time.h>
 #include <iostream>
 #include "../inc/a_star.h"
-#include "../inc/dijkstra.h"
+// #include "../inc/dijkstra.h"
 
 int main() {
   clock_t start, stop;

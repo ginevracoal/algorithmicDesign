@@ -12,11 +12,16 @@ Dijkstra is a particular case of A* with null heuristic distance.
 #define __A_star__
 
 #include "graph.h"
-// #define INFTY MaxSize
 
 template <typename T>
-void Graph<T>::Astar(T src) {
-  cout << "\n###### A* ######";
+void Graph<T>::Dijkstra(T src) {
+  cout << "\n###### Dijkstra ######";
+  Astar(src, 0);
+}
+
+template <typename T>
+void Graph<T>::Astar(T src, int my_heuristic) {
+  if (my_heuristic == 1) cout << "\n######  A* ######";
 
   // It will hold the shortest distance between src and i
   int dist[size];
@@ -36,20 +41,25 @@ void Graph<T>::Astar(T src) {
 
   // src has distance 0 from itself
   dist[src] = 0;
-
-  // MY HEURISTIC
-  // Initialize the heuristic distance of each node as the minimum weight of
-  // edges directed to i. I have to explore all the adj lists of the nodes for
-  // that.
   int min_dist;
-  for (int to = 0; to < size; ++to) {
-    min_dist = MaxSize;
-    for (int from = 0; from < size; ++from)
-      for (auto it = adj_list[from].begin(); it != adj_list[from].end(); ++it)
-        if ((*it).first == to && (*it).second < min_dist) {
-          min_dist = (*it).second;
-          heur[to] = min_dist;
-        }
+
+  if (my_heuristic == 1) {
+#ifdef DEBUG
+    cout << "\n\nUsing Custom heuristic!\n";
+#endif
+    // MY HEURISTIC
+    // Initialize the heuristic distance of each node as the minimum weight of
+    // edges directed to i. I have to explore all the adj lists of the nodes for
+    // that.
+    for (int to = 0; to < size; ++to) {
+      min_dist = MaxSize;
+      for (int from = 0; from < size; ++from)
+        for (auto it = adj_list[from].begin(); it != adj_list[from].end(); ++it)
+          if ((*it).first == to && (*it).second < min_dist) {
+            min_dist = (*it).second;
+            heur[to] = min_dist;
+          }
+    }
   }
 
 #ifdef DEBUG

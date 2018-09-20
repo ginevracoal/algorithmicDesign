@@ -143,10 +143,10 @@ class Graph {
   void Fischer_Meyer();
 
   // Solves single source shortest path problem using Dijkstra algorithm
-  void Dijkstra(T src);  // takes a start node index
+  void Dijkstra(T);  // takes a start node index
 
   // Solves single source shortest path problem using A* algorithm
-  void Astar(T src);  // takes a start node index
+  void Astar(T, int my_heuristic = 1);  // takes a start node index
 
   // Solves all pairs shortest paths using Floyd Warshall
   void Floyd_Warshall();
