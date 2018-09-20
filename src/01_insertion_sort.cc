@@ -15,16 +15,16 @@ void print_array(T* array, int n) {
 }
 
 template <typename T>
-void insertion_sort(T* array, int n) {
+void insertion_sort(T* array, int n) {  // O(n^2)
   int i, j, k;
-  for (j = 1; j < n; ++j) {
-    k = array[j];
-    i = j - 1;
-    while (i >= 0 && array[i] > k) {
-      array[i + 1] = array[i];
-      i--;
+  for (j = 1; j < n; ++j) {           // n times
+    k = array[j];                     // O(1)
+    i = j - 1;                        // O(1)
+    while (i >= 0 && array[i] > k) {  // at most j-1 times
+      array[i + 1] = array[i];        // O(1)
+      i--;                            // O(1)
     }
-    array[i + 1] = k;
+    array[i + 1] = k;  // O(1)
   }
 }
 

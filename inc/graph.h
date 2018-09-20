@@ -147,6 +147,9 @@ class Graph {
 
   // Solves single source shortest path problem using A* algorithm
   void Astar(T src);  // takes a start node index
+
+  // Solves all pairs shortest paths using Floyd Warshall
+  void Floyd_Warshall();
 };
 
 #endif
