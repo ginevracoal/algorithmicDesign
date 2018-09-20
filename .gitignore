@@ -1,6 +1,6 @@
 *.x
 *.o
 *.out
-.Rproj.user
 *.Rproj
+.Rproj.user
 *.Rhistory

@@ -42,7 +42,7 @@ void print(T* A, int begin, int end) {
 }
 
 template <typename T>
-void insertion_sort(T* A, int begin, int end) {
+void insertion_sort(T* A, int begin, int end) {  // O(n^2)
 #ifdef DEBUG
   std::cout << "\n  Insertion sort: ";
   print(A, begin, end);
@@ -69,7 +69,7 @@ void insertion_sort(T* A, int begin, int end) {
 // finds the median of the medians from begin to end, given the index j, which
 // is the maximum size of each block
 template <typename T>
-int select_pivot(T* A, int begin, int end, int j) {
+int select_pivot(T* A, int begin, int end, int j) {  // O(n/5) + T(n/5)
   int n_blocks = ceil((end - begin) / (double)j);
 
   // std::cout << "\n\n[select pivot(A, " << begin << ", " << end << ", " << j
@@ -93,10 +93,10 @@ int select_pivot(T* A, int begin, int end, int j) {
 #endif
 
     // reorder each block
-    insertion_sort(A, cbegin, cend);
+    insertion_sort(A, cbegin, cend);  // 0(1)
 
     // calculate the i-th median
-    medians[i] = A[(cend + cbegin) / 2];
+    medians[i] = A[(cend + cbegin) / 2];  // O(1)
   }
 
 #ifdef DEBUG
