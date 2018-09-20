@@ -37,10 +37,20 @@ void Graph<T>::Astar(T src) {
   // src has distance 0 from itself
   dist[src] = 0;
 
-  // Initialize heuristic distance based on the adjacency list of src
-  for (int i = 0; i < size; ++i)
-    for (auto it = adj_list[i].begin(); it != adj_list[i].end(); ++it)
-      heur[(*it).first] = (*it).second / 2;
+  // MY HEURISTIC
+  // Initialize the heuristic distance of each node as the minimum weight of
+  // edges directed to i. I have to explore all the adj lists of the nodes for
+  // that.
+  int min_dist;
+  for (int to = 0; to < size; ++to) {
+    min_dist = MaxSize;
+    for (int from = 0; from < size; ++from)
+      for (auto it = adj_list[from].begin(); it != adj_list[from].end(); ++it)
+        if ((*it).first == to && (*it).second < min_dist) {
+          min_dist = (*it).second;
+          heur[to] = min_dist;
+        }
+  }
 
 #ifdef DEBUG
   cout << "\nInitialization:";
@@ -53,7 +63,7 @@ void Graph<T>::Astar(T src) {
 #endif
 
   // Calculate the shortest path from src to all the other graph nodes
-  int min_dist, u, v, weight;
+  int u, v, weight;
   for (int count = 0; count < size; ++count) {
     // Initialize the minimum distance for all the nodes
     min_dist = MaxSize;
