@@ -154,14 +154,14 @@ Given two nodes $s,v\in V$, we define the subgraph $\mathcal{M}_{st}\subseteq\ma
 $$
 \begin{align}
 E_{st} := E_{L-1} 
-&\cup \bigcup_{i=k,\dots,L-1} \{(u,v)\in U_i | u \in Adj(C_{i-1}^s), v\in Adj(C_i^s) \\
+&\cup \bigcup_{i=k,\dots,L-1} \{(u,v)\in U_i | u \in Adj(C_{i-1}^s), v\in Adj(C_i^s) \}\\
 &\cup \bigcup_{i=k',\dots,L-1} \{(u,v)\in D_i | u \in Adj(C_{i}^t), v\in Adj(C_{i-1}^t)
 \}
 \end{align}
 $$
 <!-- level L-1 edges + upw edges from s + dwd edges to t  -->
-where $L$ is the smallest index such that $C_L^s=C_L^t$.<!-- smallest common ancestor of the leaves-->
-<!-- k and k' are the levels of the parents of the leaves -->
+where $L$ is the smallest index such that $C_L^s=C_L^t$, <!-- smallest common ancestor of the leaves-->
+while $k$ and $k'$ are the indexes corresponding to leaves' parent nodes.
 
 <br>
 
@@ -238,7 +238,9 @@ Now we need to define a modified version of the multi-level graph $\mathcal{M}(T
 
 The experiments conducted in the reference article *"Using Multi-level Graphs for Timetable Information in Railway Systems", Frank Schulz, Dorothea Wagner and Christos Zaroliagis, Springer-Verlag Berlin, 2002* involve train data of German railways consisting of: 6960 stations, 931746 vertices and 1397619 edges.
 
+<div align='center'>
 Their goal is to compare the performances for the computation of *Dijkstra's algorithm* in the train graph against the subgraph of $\mathcal{M}$.
+</div>
 
 <!-- We consider two possible time measures (notice that only the first one measures the computation of $\mathcal{M}$): -->
 <!-- - **edge-speedup** is the same ratio, but considering the number of edges in the two graphs. -->
@@ -252,7 +254,8 @@ $$
 
 ## Results | Selection Criteria in 2-level graphs {.build}
 
-Consider three different sequences of nested sets $\Sigma_1^k\supset\dots\supset\Sigma_{10}^k$ for $k=1,2,3$.
+Consider three different sequences of nested sets $\Sigma_1^k \supset \dots \supset \Sigma_{10}^k$ 
+for $k=1,2,3$.
 
 - The first level $\Sigma_1^k$ is the same for each $k$. It contains all the $1974$ stations in $SG$ with degree greater than $2$;
 - The other levels have equally spaced sizes in the range from $1974$ to $50$ but using different selection methods for the stations.
@@ -301,7 +304,7 @@ In the case of an $l$-level graph we follow an iterative approach.
 
 Given a $l-1$-level graph and its sequence $\Sigma_1\supset \dots\supset \Sigma_{l-2}$ we choose the best $\Sigma_{l-2}\subset\Sigma_{l-1}$ in terms of efficiency.
 
-If there are no more smaller sets available from the originally constructed sequence, we generate $l$ new ones and choose the best one between them.
+If there are no more smaller sets available from the originally constructed sequence, we generate $l$ new equally spaced nested subsets of $\Sigma_{l-1}$ and choose the best one between them.
 
 <img src="images/multiple_levels.png" width=900, height=280>
 
