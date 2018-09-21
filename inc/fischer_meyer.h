@@ -3,10 +3,12 @@ Fischer Meyer algorithm solves the transitive closure problem with complexity
 O(|V|^log_2(7)) instead of the O(|V|^2|E|) given by the classical search.
 The steps are the following ones:
 - compute the SCC collapsed graph in order to get an acyclic graph
-- sort the nodes of this collapsed graph in such a way that the adjacency matrix
+- sort the nodes of this collapsed graph in such a way that the adjacency
+matrix
 is upper triangular.
 - split the matrix in 4 blocks and compute the transitive closure on them
-- reconstruct the transitive closure of G knowing that all the elements in a SCC
+- reconstruct the transitive closure of G knowing that all the elements in a
+SCC
 have the same reachability set
 */
 
@@ -25,6 +27,8 @@ void print_matrix(T* M, int size) {
     std::cout << std::endl;
   }
 }
+
+// ============ Collapse ============
 
 // Compute the SCC collapsed graph, obtaining an acyclic graph.
 template <typename T>
@@ -63,8 +67,8 @@ Graph<T> Graph<T>::collapse() {
 #endif
           collapsed_graph.add_edge(*from, *to);
 
-          // The collapsed graph now contains at least one node from the scc.
-          SCC_node_inserted[SCC_idx[*from]] = true;
+          // The collapsed graph contains one representative node from the
+          scc.SCC_node_inserted[SCC_idx[*from]] = true;
         }
       }
     }
@@ -73,37 +77,7 @@ Graph<T> Graph<T>::collapse() {
   return collapsed_graph;
 }
 
-// template <typename T>
-// void Graph<T>::topological_sort_rec(int i, bool visited[], list<T> sorted) {
-//   visited[i] = true;
-
-//   for (auto it = adj[i].begin(); it != adj[i].end(); ++it)
-//     if (!visited[*it]) topological_sort_rec(*it, visited, sorted);
-
-//   sorted.push_back(i);
-// }
-
-// // Returns the topological sort of the SCCs
-// template <typename T>
-// list<T> Graph<T>::topological_sort() {
-//   list<T> sorted;
-
-//   bool* visited = new bool[size];
-//   for (auto it = unsorted.begin(); it != unsorted.end(); ++it)
-//     visited[i] = false;
-
-//   for (auto it = unsorted.begin(); it != unsorted.end(); ++it)
-//     // for (int i = 0; i < size && nodes[i] == true; ++i)
-//     if (visited[i] == false) topological_sort_rec(i, visited, sorted);
-
-// #ifdef DEBUG
-//   cout << "\nSorted nodes are: ";
-//   for (auto it = sorted.begin(); it != sorted.end(); ++it) cout << *it << "
-//   ";
-// #endif
-
-//   return sorted;
-// }
+// ============ Adjacency matrix ============
 
 // Convert adjacency list into upper triangular adjacency matrix.
 template <typename T>
@@ -112,38 +86,82 @@ bool* Graph<T>::UT_adj_matrix() {
   cout << "\n###### UT_adj_matrix ######\n";
 #endif
 
-  // Apply topological sort to the SCC in order to get a UT matrix
-  // list<T> sorted_nodes = topological_sort();
+  bool* adj_matrix = new bool[n_SCCs * n_SCCs];
 
-  bool* collapsed_adj_matrix = new bool[n_SCCs * n_SCCs];
+  // Apply topological sort to the SCC in order to get a UT matrix
+  list<T> sorted_nodes = topological_sort();
+
+  // #ifdef DEBUG
+  //   cout << "\nSorted SCCs:\n";
+  //   for (auto it = sorted_nodes.begin(); it != sorted_nodes.end(); ++it) {
+  //     for (auto node = adj[*it].begin(); node != adj[*it].end(); ++node) {
+  //       cout << *node << " ";
+  //     }
+  //     // cout << *it << " ";
+  //     cout << endl;
+  //   }
+  // #endif
 
   // Initialize all nodes as only being adjacent to themselves.
   for (int i = 0; i < n_SCCs; ++i) {
     for (int j = 0; j < n_SCCs; ++j) {
       if (i == j)
-        collapsed_adj_matrix[i * n_SCCs + j] = true;
+        adj_matrix[i * n_SCCs + j] = true;
       else
-        collapsed_adj_matrix[i * n_SCCs + j] = false;
+        adj_matrix[i * n_SCCs + j] = false;
     }
   }
 
   // Fill the adjacency matrix
   for (int i = 0; i < n_SCCs; ++i)
     for (auto it = adj[i].begin(); it != adj[i].end(); ++it) {
-      collapsed_adj_matrix[i * n_SCCs + *it] = true;
+      adj_matrix[i * n_SCCs + *it] = true;
     }
 
 #ifdef DEBUG
   // print the adjacency matrix
   for (int i = 0; i < n_SCCs; ++i) {
-    for (int j = 0; j < n_SCCs; ++j)
-      cout << collapsed_adj_matrix[i * size + j] << " ";
+    for (int j = 0; j < n_SCCs; ++j) cout << adj_matrix[i * size + j] << " ";
     cout << endl;
   }
 #endif
 
-  return collapsed_adj_matrix;
+  return adj_matrix;
+  // delete[] adj_matrix;
 }
+
+// Returns the topological sort of the SCCs
+// I can apply topological sort only on the collapsed graph since it is DAG.
+template <typename T>
+list<T> Graph<T>::topological_sort() {
+  bool* visited = new bool[size];
+  list<T> sorted_nodes;
+
+  for (int i = 0; i < size; ++i)
+    if (nodes[i] == 1) visited[i] = false;
+
+  for (int i = 0; i < size; ++i)
+    if (nodes[i] == 1 && visited[i] == false)
+      topological_sort_rec(i, visited, sorted_nodes);
+
+  return sorted_nodes;
+}
+
+template <typename T>
+void Graph<T>::topological_sort_rec(int i, bool visited[],
+                                    list<T> sorted_nodes) {
+  visited[i] = true;
+
+  // recur on the i-th adjacency list
+  for (auto it = adj[i].begin(); it != adj[i].end(); ++it)
+    if (nodes[i] == 1 && !visited[*it])
+      topological_sort_rec(*it, visited, sorted_nodes);
+
+  sorted_nodes.push_back(i);
+  cout << i << " ";
+}
+
+// ============ Decollapse ============
 
 // Compute the transitive closure of the adjacency matrix.
 template <typename T>
@@ -152,6 +170,8 @@ void Graph<T>::decollapse(T& M) {
   cout << "\n###### decollapse ######\n";
 #endif
 }
+
+// ============ Main algorithm ============
 
 template <typename T>
 void Graph<T>::Fischer_Meyer() {
@@ -162,13 +182,14 @@ void Graph<T>::Fischer_Meyer() {
   Graph<T> collapsed_graph = this->collapse();  // O(|V|^2) as topological sort
 
 #ifdef DEBUG
+  cout << "\nCollapsed graph.\n";
   collapsed_graph.print_nodes();
   collapsed_graph.print_edges();
   collapsed_graph.print_adj();
 #endif
 
   // Create an upper triangular adjacency matrix
-  // bool* M = collapsed_graph.UT_adj_matrix();  // complexity????
+  bool* M = collapsed_graph.UT_adj_matrix();  // complexity????
 
   //   // Compute the transitive closure of the matrix
   //   return this->decollapse(&M);  // O(|V|^2)

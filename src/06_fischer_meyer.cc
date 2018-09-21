@@ -1,8 +1,10 @@
-/*Fischer Meyer algorithm solves the transitive closure problem with complexity
+/*Fischer Meyer algorithm solves the transitive closure problem with
+complexity
 O(|V|^log_2(7)) instead of the O(|V|^2|E|) given by the classical search.
 */
 
 #include <iostream>
+// #include "../inc/graph.h"
 #include "../inc/fischer_meyer.h"
 
 int main() {

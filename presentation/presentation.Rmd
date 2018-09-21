@@ -48,22 +48,30 @@ which will be used to define the associated **multi-level graph** $\mathcal{M}(G
 
 ## Multi-level Graphs | Levels {.build}
 
+<div class='columns-2'>
+
+<img src="images/multi_level_graph.png" width=480>
+
+<br>
+
 Each level is a graph contaning all the nodes from $S_i$ and three possible kinds of edges:
 
 - *level edges* $E_i\subseteq S_i \times S_i$;
 - *upward edges* $U_i \subseteq (S_{i-1}\setminus S_i) \times S_i$;
 - *downward edges* $D_i \subseteq S_i \times (S_{i-1}\setminus S_i)$.
 
-<div class='columns-2'>
+
+</div>
+
 <br>
 
 The **i-th level** of $\mathcal{M}(G;S_1,\dots,S_l)$ is defined as the triple $L_i := (E_i, U_i, D_i)$.
 
 Level $0$ is set to $L_0 := (E, \emptyset, \emptyset)$. 
 
-<img src="images/multi_level_graph.png" width=480>
 
-</div>
+
+
 
 <!-- briefly comment the image and describe the levels and the edges... -->
 
@@ -259,8 +267,6 @@ for $k=1,2,3$.
 
 - The first level $\Sigma_1^k$ is the same for each $k$. It contains all the $1974$ stations in $SG$ with degree greater than $2$;
 - The other levels have equally spaced sizes in the range from $1974$ to $50$ but using different selection methods for the stations.
-
-
 
 <div class='columns-2'>
 
