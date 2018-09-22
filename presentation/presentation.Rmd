@@ -158,7 +158,7 @@ Now we define the structure in which we are going to search for the shortest-dis
     
 ## Multi-level Graphs | Component Tree
     
-Given two nodes $s,v\in V$, we define the subgraph $\mathcal{M}_{st}\subseteq\mathcal{M}$ induced by the edge set
+Given two nodes $s,t\in V$, we define the subgraph $\mathcal{M}_{st}\subseteq\mathcal{M}$ induced by the edge set
 $$
 \begin{align}
 E_{st} := E_{L-1} 

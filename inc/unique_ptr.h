@@ -17,8 +17,10 @@ class unique_ptr {
 
  public:
   // CLASS CONSTRUCTORS
+  // Default constructor
   unique_ptr() : ptr{nullptr} {}  // it is a nullptr if no object is owned
 
+  // Explicit constructor
   unique_ptr(T* p) : ptr{p} {}
 
   // CLASS DESTRUCTOR
